@@ -276,7 +276,6 @@ DELETE http://localhost:3001/api/logs
 
 ## Coming Soon
 
-- **React Hooks** - Ready-to-use hooks for React applications
 - **Persistent Storage** - Save endpoints to file or database
 
 ## Development
@@ -323,6 +322,57 @@ Components documented:
 - Button (variants: default, destructive, outline, secondary, ghost, link)
 - Dialog (with forms, destructive confirmations)
 - Toaster (dark/light themes)
+
+## React Hooks
+
+Use `@mockly/hooks` to consume Mockly APIs in your React applications.
+
+### Installation
+
+```bash
+npm install @mockly/hooks
+```
+
+### Quick Start
+
+```typescript
+import { MocklyProvider, useMockEndpoints, useMockServer } from '@mockly/hooks';
+
+function App() {
+  return (
+    <MocklyProvider>
+      <Dashboard />
+    </MocklyProvider>
+  );
+}
+
+function Dashboard() {
+  const { isConnected } = useMockServer('http://localhost:3001');
+  const { endpoints, create, remove } = useMockEndpoints('http://localhost:3001');
+
+  return (
+    <div>
+      <p>Server: {isConnected ? 'Connected' : 'Disconnected'}</p>
+      <ul>
+        {endpoints.map(ep => (
+          <li key={ep.id}>{ep.method} {ep.path}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+### Available Hooks
+
+| Hook | Description |
+|------|-------------|
+| `useMockServer(baseUrl)` | Check server connection status |
+| `useMockEndpoints(baseUrl)` | CRUD operations for endpoints |
+| `useMockEndpoint(baseUrl, id)` | Get single endpoint by ID |
+| `useMockLogs(baseUrl)` | Get and clear request logs |
+
+See the [hooks package](./packages/hooks) for full API documentation.
 
 ## Publishing
 
