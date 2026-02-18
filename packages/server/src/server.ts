@@ -25,6 +25,11 @@ export class MockServer {
 
   private setupLogging(): void {
     this.app.use((req: Request, res: Response, next: NextFunction) => {
+      // Skip logging for API management routes
+      if (req.path.startsWith('/api/endpoints') || req.path.startsWith('/api/logs')) {
+        return next();
+      }
+
       const start = Date.now();
       
       res.on('finish', () => {
