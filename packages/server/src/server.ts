@@ -1,15 +1,15 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
-import { v4 as uuidv4 } from 'uuid';
 import { endpointModel } from './models/Endpoint';
+import { processObject } from './utils/faker';
+import { logger } from './utils/logger';
 import mockRoutes from './routes/mockRoutes';
-import { MockServerConfig, RequestLog, HttpMethod } from './types';
+import { MockServerConfig, HttpMethod, RequestLog } from './types';
 
 export class MockServer {
   private app: Application;
   private server: any;
   private port: number;
-  private logs: RequestLog[] = [];
 
   constructor(config: MockServerConfig = {}) {
     this.app = express();
@@ -28,23 +28,18 @@ export class MockServer {
       const start = Date.now();
       
       res.on('finish', () => {
-        const log: RequestLog = {
-          id: uuidv4(),
-          endpointId: '',
+        const endpoint = endpointModel.findByPath(req.path, req.method as HttpMethod);
+        
+        logger.addLog({
+          endpointId: endpoint?.id || '',
           path: req.path,
           method: req.method,
           status: res.statusCode,
           timestamp: new Date(),
           responseTime: Date.now() - start,
-        };
+        });
 
-        const endpoint = endpointModel.findByPath(req.path, req.method as HttpMethod);
-        if (endpoint) {
-          log.endpointId = endpoint.id;
-        }
-
-        this.logs.push(log);
-        console.log(`[${log.timestamp.toISOString()}] ${log.method} ${log.path} - ${log.status} (${log.responseTime}ms)`);
+        console.log(`[${new Date().toISOString()}] ${req.method} ${req.path} - ${res.statusCode} (${Date.now() - start}ms)`);
       });
 
       next();
@@ -67,7 +62,8 @@ export class MockServer {
         await new Promise((resolve) => setTimeout(resolve, endpoint.delay));
       }
 
-      res.json(endpoint.response);
+      const processedResponse = processObject(endpoint.response);
+      res.json(processedResponse);
     });
   }
 
@@ -94,11 +90,11 @@ export class MockServer {
   }
 
   public getLogs(): RequestLog[] {
-    return this.logs;
+    return logger.getLogs();
   }
 
   public clearLogs(): void {
-    this.logs = [];
+    logger.clear();
   }
 
   public getPort(): number {

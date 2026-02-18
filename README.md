@@ -2,7 +2,7 @@
 
 [![npm version](https://img.shields.io/npm/v/mockly)](https://www.npmjs.com/package/mockly)
 [![Build](https://img.shields.io/github/actions/workflow/status/Miguel-Leite/mockly/ci.yml)](https://github.com/Miguel-Leite/mockly/actions)
-[![Tests](https://img.shields.io/badge/tests-33%20passed-brightgreen)](https://github.com/Miguel-Leite/mockly)
+[![Tests](https://img.shields.io/badge/tests-56%20passed-brightgreen)](https://github.com/Miguel-Leite/mockly)
 [![License](https://img.shields.io/npm/l/mockly)](LICENSE)
 [![Node.js](https://img.shields.io/node/v/mockly)](https://nodejs.org)
 
@@ -65,6 +65,73 @@ endpointModel.create({
   response: { message: 'This took a while!' },
   delay: 2000  // 2 seconds
 });
+```
+
+## Random Data with Faker
+
+Generate realistic fake data using Faker templates:
+
+```typescript
+endpointModel.create({
+  path: '/api/users',
+  method: 'GET',
+  response: {
+    users: [
+      {
+        id: '{{faker.uuid}}',
+        name: '{{faker.name}}',
+        email: '{{faker.email}}',
+        phone: '{{faker.phone}}',
+        address: '{{faker.city}}, {{faker.country}}',
+        company: '{{faker.company}}',
+        avatar: '{{faker.avatar}}',
+        isActive: '{{faker.boolean}}'
+      }
+    ]
+  }
+});
+```
+
+### Available Faker Templates
+
+| Template | Description |
+|----------|-------------|
+| `{{faker.name}}` | Full name |
+| `{{faker.firstName}}` | First name |
+| `{{faker.lastName}}` | Last name |
+| `{{faker.email}}` | Email address |
+| `{{faker.phone}}` | Phone number |
+| `{{faker.uuid}}` | UUID |
+| `{{faker.boolean}}` | Boolean |
+| `{{faker.number}}` | Random number |
+| `{{faker.date}}` | Recent date |
+| `{{faker.city}}` | City name |
+| `{{faker.country}}` | Country name |
+| `{{faker.street}}` | Street address |
+| `{{faker.url}}` | URL |
+| `{{faker.avatar}}` | Avatar URL |
+| `{{faker.company}}` | Company name |
+| `{{faker.word}}` | Random word |
+| `{{faker.sentence}}` | Random sentence |
+| `{{faker.paragraph}}` | Random paragraph |
+
+## Request Logs
+
+View and manage request logs via API:
+
+```bash
+# Get all request logs
+GET http://localhost:3001/api/logs
+
+# Clear all logs
+DELETE http://localhost:3001/api/logs
+```
+
+Or programmatically:
+
+```typescript
+const logs = server.getLogs();
+server.clearLogs();
 ```
 
 ## API Reference
@@ -199,13 +266,19 @@ Content-Type: application/json
 
 # Delete endpoint
 DELETE http://localhost:3001/api/endpoints/:id
+
+# Get request logs
+GET http://localhost:3001/api/logs
+
+# Clear request logs
+DELETE http://localhost:3001/api/logs
 ```
 
 ## Coming Soon
 
-- **Random Data Generation** - Generate fake data with Faker
 - **Web Interface** - Visual dashboard to manage endpoints
 - **React Hooks** - Ready-to-use hooks for React applications
+- **Persistent Storage** - Save endpoints to file or database
 
 ## License
 

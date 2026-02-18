@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { endpointModel } from '../models/Endpoint';
+import { logger } from '../utils/logger';
 import { CreateEndpointDto, UpdateEndpointDto } from '../types';
 
 const router = Router();
@@ -72,6 +73,16 @@ router.delete('/endpoints/:id', (req: Request, res: Response) => {
     return res.status(404).json({ error: 'Endpoint not found' });
   }
 
+  res.status(204).send();
+});
+
+router.get('/logs', (_req: Request, res: Response) => {
+  const logs = logger.getLogs();
+  res.json(logs);
+});
+
+router.delete('/logs', (_req: Request, res: Response) => {
+  logger.clear();
   res.status(204).send();
 });
 

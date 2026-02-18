@@ -8,4 +8,7 @@ module.exports = {
     'src/**/*.ts',
     '!src/**/*.d.ts',
   ],
+  moduleNameMapper: {
+    '^@faker-js/faker$': '<rootDir>/tests/__mocks__/faker.ts',
+  },
 };
