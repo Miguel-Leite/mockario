@@ -47,7 +47,7 @@ function inferJsonStructure(jsonString: string): object {
   try {
     const parsed = JSON.parse(jsonString);
     const result: Record<string, any> = {};
-    
+
     for (const [key, value] of Object.entries(parsed)) {
       const type = typeof value;
       if (type === 'string') {
@@ -64,7 +64,7 @@ function inferJsonStructure(jsonString: string): object {
         }
       }
     }
-    
+
     return result;
   } catch {
     return {};
@@ -83,7 +83,7 @@ function parseTsStructure(tsString: string): Record<string, string> {
 function generateFromTsStructure(tsString: string): object {
   const fields = parseTsStructure(tsString);
   const result: Record<string, any> = {};
-  
+
   for (const [key, type] of Object.entries(fields)) {
     switch (type.toLowerCase()) {
       case 'string':
@@ -114,7 +114,7 @@ function generateFromTsStructure(tsString: string): object {
         result[key] = '{{faker.word}}';
     }
   }
-  
+
   return result;
 }
 
@@ -135,7 +135,7 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
   const [payloadTableId, setPayloadTableId] = useState(endpoint?.payloadSchemaRef?.tableId || '');
   const [preview, setPreview] = useState<string>('');
   const [error, setError] = useState('');
-  
+
   const responseTextareaRef = useRef<HTMLTextAreaElement>(null);
   const payloadTextareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -143,7 +143,7 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
 
   const handleSubmit = () => {
     setError('');
-    
+
     if (!path.trim()) {
       setError('Path is required');
       return;
@@ -350,14 +350,13 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
             value={response}
             onChange={(e) => setResponse(e.target.value)}
             rows={responseType === 'ts' ? 6 : 10}
-            placeholder={responseType === 'ts' 
-              ? `{name: string; email: string; price: number}` 
+            placeholder={responseType === 'ts'
+              ? `{name: string; email: string; price: number}`
               : `{"name": "", "email": "", "price": 0}`}
             className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 text-sm text-neutral-200 font-mono placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-600 resize-none"
           />
 
           <div className="mt-2 flex items-center gap-2">
-            <FakerTemplates onInsert={handleInsertFakerAtCursor} />
             <Button
               variant="outline"
               size="sm"
@@ -372,6 +371,7 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
                 Click Preview to see result
               </span>
             )}
+            <FakerTemplates onInsert={handleInsertFakerAtCursor} />
           </div>
         </div>
 
@@ -386,7 +386,7 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
               Payload Validation (Optional)
               {showPayload ? ' ▲' : ' ▼'}
             </button>
-            
+
             {showPayload && (
               <div className="mt-3 space-y-3">
                 <div className="flex items-center gap-2">
@@ -402,7 +402,7 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
                     <option value="json">JSON</option>
                     <option value="ts">TS</option>
                   </select>
-                  
+
                   {payloadType === 'json' && (
                     <SchemaSelector
                       onSelect={handlePayloadSchemaSelect}
@@ -411,14 +411,14 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
                     />
                   )}
                 </div>
-                
+
                 <textarea
                   ref={payloadTextareaRef}
                   value={payload}
                   onChange={(e) => setPayload(e.target.value)}
                   rows={4}
-                  placeholder={payloadType === 'ts' 
-                    ? `{name: string; email: string}` 
+                  placeholder={payloadType === 'ts'
+                    ? `{name: string; email: string}`
                     : `{"name": "", "email": ""}`}
                   className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 text-sm text-neutral-200 font-mono placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-600 resize-none"
                 />
@@ -445,7 +445,7 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
         )}
 
         <div className="flex justify-end gap-2 pt-2">
-          <Button variant="outline" onClick={isEditing ? () => {} : handleClose}>
+          <Button variant="outline" onClick={isEditing ? () => { } : handleClose}>
             {isEditing ? 'Close' : 'Cancel'}
           </Button>
           <Button onClick={handleSubmit}>
