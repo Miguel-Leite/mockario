@@ -76,9 +76,8 @@ export class EndpointModel {
       delay: dto.delay || 0,
       schemaRef: dto.schemaRef,
       storedData: dto.storedData,
-      payloadJson: dto.payloadJson,
-      payloadSchemaRef: dto.payloadSchemaRef,
-      payloadType: dto.payloadType,
+      responseKeys: dto.responseKeys,
+      authRequired: dto.authRequired,
       createdAt: new Date().toISOString(),
     };
     this.endpoints.set(id, endpoint);
@@ -113,9 +112,8 @@ export class EndpointModel {
       delay: dto.delay !== undefined ? dto.delay : endpoint.delay,
       schemaRef: dto.schemaRef !== undefined ? dto.schemaRef : endpoint.schemaRef,
       storedData: dto.storedData !== undefined ? dto.storedData : endpoint.storedData,
-      payloadJson: dto.payloadJson !== undefined ? dto.payloadJson : endpoint.payloadJson,
-      payloadSchemaRef: dto.payloadSchemaRef !== undefined ? dto.payloadSchemaRef : endpoint.payloadSchemaRef,
-      payloadType: dto.payloadType !== undefined ? dto.payloadType : endpoint.payloadType,
+      responseKeys: dto.responseKeys !== undefined ? dto.responseKeys : endpoint.responseKeys,
+      authRequired: dto.authRequired !== undefined ? dto.authRequired : endpoint.authRequired,
     };
     this.endpoints.set(id, updated);
     storage.updateEndpoint(id, updated);

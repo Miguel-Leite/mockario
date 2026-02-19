@@ -5,6 +5,8 @@ import { endpointModel } from './models/Endpoint';
 import { processObject, processFakerTemplate } from './utils/faker';
 import { logger } from './utils/logger';
 import mockRoutes from './routes/mockRoutes';
+import authRoutes from './routes/auth';
+import { authMiddleware } from './middleware/auth';
 import { MockServerConfig, HttpMethod, RequestLog, ResponseType } from './types';
 
 export class MockServer {
@@ -62,11 +64,12 @@ export class MockServer {
   }
 
   private setupMockRoutes(): void {
+    this.app.use('/api/auth', authRoutes);
     this.app.use('/api', mockRoutes);
   }
 
   private setupMockHandler(): void {
-    this.app.all('*', async (req: Request, res: Response) => {
+    this.app.all('*', authMiddleware, async (req: Request, res: Response) => {
       const method = req.method as HttpMethod;
       const endpoint = endpointModel.findByPath(req.path, method);
 

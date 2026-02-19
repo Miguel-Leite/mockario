@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Home } from './pages/Home';
 import { Schemas } from './pages/Schemas';
 import { SchemaEditor } from './pages/SchemaEditor';
+import { Settings } from './pages/Settings';
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/schemas" element={<Schemas />} />
         <Route path="/schemas/:id" element={<SchemaEditor />} />
+        <Route path="/settings" element={<Settings />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

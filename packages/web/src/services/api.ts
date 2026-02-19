@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { MockEndpoint, CreateEndpointDto, RequestLog, Schema, SchemaTable, SchemaField, SchemaRelation, TablePosition } from '@/types';
+import type { MockEndpoint, CreateEndpointDto, RequestLog, Schema, SchemaTable, SchemaField, SchemaRelation, TablePosition, AuthSettings, User } from '@/types';
 
 const API_BASE_URL = 'http://localhost:3001/api';
 
@@ -126,5 +126,46 @@ export const schemasApi = {
   generateFromTable: async (schemaId: string, tableId: string, count?: number): Promise<object[]> => {
     const response = await api.post<object[]>(`/schemas/${schemaId}/generate`, { tableId, count });
     return response.data;
+  },
+};
+
+export const authApi = {
+  getSettings: async (): Promise<AuthSettings & { users: User[] }> => {
+    const response = await api.get<AuthSettings & { users: User[] }>('/auth/settings');
+    return response.data;
+  },
+
+  updateSettings: async (settings: Partial<AuthSettings>): Promise<AuthSettings> => {
+    const response = await api.put<AuthSettings>('/auth/settings', settings);
+    return response.data;
+  },
+
+  getAuthEndpoints: async (): Promise<MockEndpoint[]> => {
+    const response = await api.get<MockEndpoint[]>('/auth/endpoints');
+    return response.data;
+  },
+
+  login: async (username: string, password: string): Promise<{ token?: string; user: User }> => {
+    const response = await api.post<{ token?: string; user: User }>('/auth/login', { username, password });
+    return response.data;
+  },
+
+  register: async (username: string, password: string): Promise<{ user: User }> => {
+    const response = await api.post<{ user: User }>('/auth/register', { username, password });
+    return response.data;
+  },
+
+  getUsers: async (): Promise<User[]> => {
+    const response = await api.get<User[]>('/auth/users');
+    return response.data;
+  },
+
+  createUser: async (username: string, password: string): Promise<{ user: User }> => {
+    const response = await api.post<{ user: User }>('/auth/users', { username, password });
+    return response.data;
+  },
+
+  deleteUser: async (id: string): Promise<void> => {
+    await api.delete(`/auth/users/${id}`);
   },
 };

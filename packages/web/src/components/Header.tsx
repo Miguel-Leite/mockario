@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Server, FileText, Database } from 'lucide-react';
+import { Server, FileText, Database, Settings } from 'lucide-react';
 
 interface HeaderProps {
   serverConnected?: boolean;
@@ -24,7 +24,7 @@ export function Header({ serverConnected = true }: HeaderProps) {
             <Link
               to="/"
               className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors ${
-                isActive('/') && !isActive('/schemas')
+                isActive('/') && !isActive('/schemas') && !isActive('/settings')
                   ? 'bg-neutral-800 text-neutral-100'
                   : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/50'
               }`}
@@ -42,6 +42,17 @@ export function Header({ serverConnected = true }: HeaderProps) {
             >
               <Database className="h-4 w-4" />
               Schemas
+            </Link>
+            <Link
+              to="/settings"
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors ${
+                isActive('/settings')
+                  ? 'bg-neutral-800 text-neutral-100'
+                  : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/50'
+              }`}
+            >
+              <Settings className="h-4 w-4" />
+              Settings
             </Link>
           </nav>
         </div>

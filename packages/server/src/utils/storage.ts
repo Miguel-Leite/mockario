@@ -1,11 +1,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import type { MockEndpoint, Schema } from '../types';
+import type { MockEndpoint, Schema, AuthSettings, User } from '../types';
 
 interface StorageData {
   endpoints: MockEndpoint[];
   schemas: Schema[];
+  auth?: AuthSettings;
+  users?: User[];
 }
 
 const DEFAULT_DATA_DIR = path.join(os.homedir(), '.mockly');
@@ -19,7 +21,7 @@ export class Storage {
   constructor() {
     this.dataDir = process.env.MOCKLY_DATA_DIR || DEFAULT_DATA_DIR;
     this.filePath = path.join(this.dataDir, DEFAULT_FILE);
-    this.data = { endpoints: [], schemas: [] };
+    this.data = { endpoints: [], schemas: [], users: [] };
     this.ensureDataDir();
     this.load();
   }
@@ -40,7 +42,7 @@ export class Storage {
       }
     } catch (error) {
       console.warn('[Storage] Failed to load data, using empty state:', error);
-      this.data = { endpoints: [], schemas: [] };
+      this.data = { endpoints: [], schemas: [], users: [] };
     }
   }
 
@@ -121,6 +123,32 @@ export class Storage {
         this.save();
       }
     }
+  }
+
+  getAuthSettings(): AuthSettings | undefined {
+    return this.data.auth;
+  }
+
+  setAuthSettings(settings: AuthSettings): void {
+    this.data.auth = settings;
+    this.save();
+  }
+
+  getUsers(): User[] {
+    return this.data.users || [];
+  }
+
+  addUser(user: User): void {
+    if (!this.data.users) {
+      this.data.users = [];
+    }
+    this.data.users.push(user);
+    this.save();
+  }
+
+  deleteUser(userId: string): void {
+    this.data.users = (this.data.users || []).filter(u => u.id !== userId);
+    this.save();
   }
 
   getFilePath(): string {

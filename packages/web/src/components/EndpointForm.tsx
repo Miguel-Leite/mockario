@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react';
-import { Plus, Code, Play } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Plus, Shield, RefreshCw, Layers } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -8,8 +8,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import type { CreateEndpointDto, HttpMethod, MockEndpoint, ResponseType } from '@/types';
-import { FakerTemplates } from './FakerTemplates';
+import type { CreateEndpointDto, HttpMethod, MockEndpoint, Schema } from '@/types';
 import { SchemaSelector } from './SchemaSelector';
 import { schemasApi } from '@/services/api';
 
@@ -19,129 +18,60 @@ interface EndpointFormProps {
   trigger?: React.ReactNode;
 }
 
-const defaultJson = `{
-  "name": "",
-  "email": "",
-  "price": 0,
-  "active": false
-}`;
-
-const defaultTs = `{
-  name: string;
-  email: string;
-  price: number;
-  active: boolean;
-}`;
-
-const defaultPayloadJson = `{
-  "name": "",
-  "email": ""
-}`;
-
-const defaultPayloadTs = `{
-  name: string;
-  email: string;
-}`;
-
-function inferJsonStructure(jsonString: string): object {
-  try {
-    const parsed = JSON.parse(jsonString);
-    const result: Record<string, any> = {};
-
-    for (const [key, value] of Object.entries(parsed)) {
-      const type = typeof value;
-      if (type === 'string') {
-        result[key] = value === '' ? 'string' : value;
-      } else if (type === 'number') {
-        result[key] = value;
-      } else if (type === 'boolean') {
-        result[key] = value;
-      } else if (type === 'object') {
-        if (Array.isArray(value)) {
-          result[key] = [];
-        } else {
-          result[key] = {};
-        }
-      }
+function generateFromKeys(keys: string[], isArray: boolean, count: number = 1): object | object[] {
+  const results: object[] = [];
+  
+  for (let i = 0; i < count; i++) {
+    const row: Record<string, any> = {};
+    for (const key of keys) {
+      row[key] = '';
     }
-
-    return result;
-  } catch {
-    return {};
+    results.push(row);
   }
-}
-
-function parseTsStructure(tsString: string): Record<string, string> {
-  const result: Record<string, string> = {};
-  const matches = tsString.matchAll(/(\w+)\s*:\s*(\w+)/g);
-  for (const match of matches) {
-    result[match[1]] = match[2];
-  }
-  return result;
-}
-
-function generateFromTsStructure(tsString: string): object {
-  const fields = parseTsStructure(tsString);
-  const result: Record<string, any> = {};
-
-  for (const [key, type] of Object.entries(fields)) {
-    switch (type.toLowerCase()) {
-      case 'string':
-        result[key] = '{{faker.name}}';
-        break;
-      case 'number':
-        result[key] = '{{faker.number}}';
-        break;
-      case 'boolean':
-        result[key] = '{{faker.boolean}}';
-        break;
-      case 'date':
-        result[key] = '{{faker.date}}';
-        break;
-      case 'email':
-        result[key] = '{{faker.email}}';
-        break;
-      case 'uuid':
-        result[key] = '{{faker.uuid}}';
-        break;
-      case 'array':
-        result[key] = [];
-        break;
-      case 'object':
-        result[key] = {};
-        break;
-      default:
-        result[key] = '{{faker.word}}';
-    }
-  }
-
-  return result;
+  
+  return isArray ? results : results[0];
 }
 
 export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps) {
   const [open, setOpen] = useState(false);
+  const [schemas, setSchemas] = useState<Schema[]>([]);
+  
   const [path, setPath] = useState(endpoint?.path || '');
   const [method, setMethod] = useState<HttpMethod>(endpoint?.method || 'GET');
-  const [response, setResponse] = useState(endpoint ? JSON.stringify(endpoint.response, null, 2) : defaultJson);
-  const [responseType, setResponseType] = useState<ResponseType>(endpoint?.responseType || 'json');
   const [delay, setDelay] = useState(endpoint?.delay?.toString() || '');
   const [count, setCount] = useState(endpoint?.storedData ? String(endpoint.storedData.length) : '1');
   const [schemaId, setSchemaId] = useState(endpoint?.schemaRef?.schemaId || '');
   const [tableId, setTableId] = useState(endpoint?.schemaRef?.tableId || '');
-  const [showPayload, setShowPayload] = useState(false);
-  const [payload, setPayload] = useState(endpoint?.payloadJson ? JSON.stringify(endpoint.payloadJson, null, 2) : defaultPayloadJson);
-  const [payloadType, setPayloadType] = useState<ResponseType>(endpoint?.payloadType || 'json');
-  const [payloadSchemaId, setPayloadSchemaId] = useState(endpoint?.payloadSchemaRef?.schemaId || '');
-  const [payloadTableId, setPayloadTableId] = useState(endpoint?.payloadSchemaRef?.tableId || '');
-  const [preview, setPreview] = useState<string>('');
+  const [responseKeys, setResponseKeys] = useState<string[]>(endpoint?.responseKeys || []);
+  const [responseKeysInput, setResponseKeysInput] = useState('');
+  const [isArray, setIsArray] = useState(endpoint?.storedData ? Array.isArray(endpoint.storedData) : false);
   const [error, setError] = useState('');
-
-  const responseTextareaRef = useRef<HTMLTextAreaElement>(null);
-  const payloadTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const [authRequired, setAuthRequired] = useState(endpoint?.authRequired || false);
+  const [useCustomKeys, setUseCustomKeys] = useState(!endpoint?.schemaRef && !!endpoint?.responseKeys);
 
   const isEditing = !!endpoint;
 
-  const handleSubmit = () => {
+  useEffect(() => {
+    schemasApi.getAll()
+      .then(setSchemas)
+      .catch(console.error);
+  }, []);
+
+  const hasSchemas = schemas.length > 0;
+
+  const handleSchemaSelect = async (newSchemaId: string, newTableId: string) => {
+    setSchemaId(newSchemaId);
+    setTableId(newTableId);
+    setUseCustomKeys(false);
+  };
+
+  const handleCustomKeysChange = (value: string) => {
+    setResponseKeysInput(value);
+    const keys = value.split(',').map(k => k.trim()).filter(k => k.length > 0);
+    setResponseKeys(keys);
+  };
+
+  const handleSubmit = async () => {
     setError('');
 
     if (!path.trim()) {
@@ -154,53 +84,43 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
       return;
     }
 
-    let parsedResponse;
-    if (responseType === 'json') {
+    if (!schemaId && responseKeys.length === 0 && !useCustomKeys) {
+      setError('Please select a schema and table, or enter custom response keys');
+      return;
+    }
+
+    let response: object;
+    let finalSchemaRef = undefined;
+    let finalResponseKeys = undefined;
+
+    if (useCustomKeys || responseKeys.length > 0) {
+      const numCount = parseInt(count) || 1;
+      response = generateFromKeys(responseKeys, isArray, numCount);
+      finalResponseKeys = responseKeys;
+    } else if (schemaId && tableId) {
       try {
-        JSON.parse(response);
-        parsedResponse = inferJsonStructure(response);
-      } catch {
-        setError('Invalid JSON response');
+        const numCount = parseInt(count) || 1;
+        const data = await schemasApi.generateFromTable(schemaId, tableId, numCount);
+        response = isArray ? data : data[0];
+        finalSchemaRef = { schemaId, tableId };
+      } catch (err) {
+        setError('Failed to generate response from schema');
         return;
       }
     } else {
-      const fields = parseTsStructure(response);
-      if (Object.keys(fields).length === 0) {
-        setError('Invalid TS structure. Use format: { field: type; }');
-        return;
-      }
-      parsedResponse = generateFromTsStructure(response);
-    }
-
-    let parsedPayload = undefined;
-    if (showPayload && (method === 'POST' || method === 'PUT')) {
-      if (payloadType === 'json') {
-        try {
-          parsedPayload = inferJsonStructure(payload);
-        } catch {
-          setError('Invalid JSON payload');
-          return;
-        }
-      } else {
-        const fields = parseTsStructure(payload);
-        if (Object.keys(fields).length === 0) {
-          setError('Invalid TS structure for payload');
-          return;
-        }
-        parsedPayload = generateFromTsStructure(payload);
-      }
+      response = {};
     }
 
     const dto: CreateEndpointDto = {
       path: path.trim(),
       method,
-      response: parsedResponse,
-      responseType,
+      response,
+      responseType: 'json',
       delay: delay ? parseInt(delay) : undefined,
-      ...(schemaId && tableId ? { schemaRef: { schemaId, tableId } } : {}),
-      ...(parsedPayload ? { payloadJson: parsedPayload } : {}),
-      ...(payloadSchemaId && payloadTableId ? { payloadSchemaRef: { schemaId: payloadSchemaId, tableId: payloadTableId } } : {}),
-      ...(showPayload ? { payloadType } : {}),
+      ...(finalSchemaRef ? { schemaRef: finalSchemaRef } : {}),
+      ...(finalResponseKeys ? { responseKeys: finalResponseKeys } : {}),
+      ...(isArray ? { storedData: Array.isArray(response) ? response : [response] } : {}),
+      authRequired,
     };
 
     onSubmit(dto);
@@ -212,74 +132,23 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
   const handleClose = () => {
     setPath('');
     setMethod('GET');
-    setResponse(defaultJson);
-    setResponseType('json');
     setDelay('');
     setCount('1');
     setSchemaId('');
     setTableId('');
-    setShowPayload(false);
-    setPayload(defaultPayloadJson);
-    setPayloadType('json');
-    setPayloadSchemaId('');
-    setPayloadTableId('');
-    setPreview('');
+    setResponseKeys([]);
+    setResponseKeysInput('');
+    setIsArray(false);
     setError('');
+    setAuthRequired(false);
+    setUseCustomKeys(false);
     setOpen(false);
   };
 
-  const handleInsertFakerAtCursor = (template: string) => {
-    const textarea = responseTextareaRef.current;
-    if (!textarea) return;
-
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const text = textarea.value;
-
-    setResponse(text.substring(0, start) + template + text.substring(end));
-  };
-
-  const handleGeneratePreview = async () => {
-    if (responseType === 'json') {
-      try {
-        JSON.parse(response);
-        setPreview(JSON.stringify(inferJsonStructure(response), null, 2));
-      } catch {
-        setPreview('Invalid JSON');
-      }
-    } else {
-      const generated = generateFromTsStructure(response);
-      setPreview(JSON.stringify(generated, null, 2));
-    }
-  };
-
-  const handleSchemaSelect = async (newSchemaId: string, newTableId: string) => {
-    setSchemaId(newSchemaId);
-    setTableId(newTableId);
-
-    if (newSchemaId && newTableId) {
-      try {
-        const numCount = parseInt(count) || 1;
-        const data = await schemasApi.generateFromTable(newSchemaId, newTableId, numCount);
-        setResponse(JSON.stringify(data, null, 2));
-      } catch (err) {
-        console.error('Failed to generate from schema:', err);
-      }
-    }
-  };
-
-  const handlePayloadSchemaSelect = async (newSchemaId: string, newTableId: string) => {
-    setPayloadSchemaId(newSchemaId);
-    setPayloadTableId(newTableId);
-
-    if (newSchemaId && newTableId) {
-      try {
-        const data = await schemasApi.generateFromTable(newSchemaId, newTableId, 1);
-        setPayload(JSON.stringify(data[0], null, 2));
-      } catch (err) {
-        console.error('Failed to generate from schema:', err);
-      }
-    }
+  const handleToggleCustomMode = () => {
+    setUseCustomKeys(true);
+    setSchemaId('');
+    setTableId('');
   };
 
   const dialogContent = (
@@ -308,22 +177,117 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
           />
         </div>
 
-        <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <div className="flex items-center gap-2">
-              <label className="text-xs text-neutral-400">Response</label>
-              <select
-                value={responseType}
-                onChange={(e) => {
-                  setResponseType(e.target.value as ResponseType);
-                  setResponse(e.target.value === 'ts' ? defaultTs : defaultJson);
-                }}
-                className="h-6 text-xs rounded border border-neutral-700 bg-neutral-800 px-2 py-1 text-neutral-300"
+        <div className="bg-neutral-900 rounded-lg border border-neutral-800 p-4 space-y-4">
+          <div className="flex items-center justify-between">
+            <label className="text-sm text-neutral-300 font-medium">Data Source</label>
+            {hasSchemas && !useCustomKeys && (
+              <button
+                type="button"
+                onClick={handleToggleCustomMode}
+                className="text-xs text-primary-400 hover:text-primary-300"
               >
-                <option value="json">JSON</option>
-                <option value="ts">TS/Faker</option>
-              </select>
-              {method === 'GET' && (
+                Use custom keys instead
+              </button>
+            )}
+          </div>
+
+          {!useCustomKeys && hasSchemas && (
+            <div className="flex items-center gap-2">
+              <SchemaSelector
+                onSelect={handleSchemaSelect}
+                selectedSchemaId={schemaId}
+                selectedTableId={tableId}
+              />
+              {schemaId && tableId && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={async () => {
+                    if (schemaId && tableId) {
+                      try {
+                        const numCount = parseInt(count) || 1;
+                        await schemasApi.generateFromTable(schemaId, tableId, numCount);
+                      } catch (err) {
+                        console.error('Failed to generate:', err);
+                      }
+                    }
+                  }}
+                  title="Generate from schema"
+                >
+                  <RefreshCw className="h-3 w-3" />
+                </Button>
+              )}
+            </div>
+          )}
+
+          {!useCustomKeys && !hasSchemas && (
+            <div className="text-sm text-neutral-500">
+              No schemas available. Create a schema first or use custom keys.
+            </div>
+          )}
+
+          {useCustomKeys && (
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs text-neutral-400 mb-1.5 block">
+                  Response Keys (comma separated)
+                </label>
+                <input
+                  type="text"
+                  value={responseKeysInput}
+                  onChange={(e) => handleCustomKeysChange(e.target.value)}
+                  placeholder="name, email, age"
+                  className="w-full h-9 rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 text-sm text-neutral-200 placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-600"
+                />
+                <p className="text-xs text-neutral-500 mt-1">
+                  Enter key names separated by commas. These will be used for both response and POST payload.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsArray(!isArray)}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-md border transition-colors ${
+                    isArray 
+                      ? 'bg-primary-600 border-primary-600 text-white' 
+                      : 'border-neutral-700 text-neutral-400 hover:border-neutral-600'
+                  }`}
+                >
+                  <Layers className="h-4 w-4" />
+                  <span className="text-sm">Array</span>
+                </button>
+                {isArray && (
+                  <input
+                    type="number"
+                    value={count}
+                    onChange={(e) => setCount(e.target.value)}
+                    placeholder="Count"
+                    min="1"
+                    max="100"
+                    className="h-8 w-20 text-xs rounded border border-neutral-700 bg-neutral-800 px-2 py-1 text-neutral-300"
+                    title="Number of records"
+                  />
+                )}
+              </div>
+            </div>
+          )}
+
+          {!useCustomKeys && hasSchemas && method === 'GET' && (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setIsArray(!isArray)}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-md border transition-colors ${
+                  isArray 
+                    ? 'bg-primary-600 border-primary-600 text-white' 
+                    : 'border-neutral-700 text-neutral-400 hover:border-neutral-600'
+                }`}
+              >
+                <Layers className="h-4 w-4" />
+                <span className="text-sm">Array</span>
+              </button>
+              {isArray && (
                 <input
                   type="number"
                   value={count}
@@ -331,101 +295,27 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
                   placeholder="Count"
                   min="1"
                   max="100"
-                  className="h-6 w-16 text-xs rounded border border-neutral-700 bg-neutral-800 px-2 py-1 text-neutral-300"
-                  title="Number of records to generate"
+                  className="h-8 w-20 text-xs rounded border border-neutral-700 bg-neutral-800 px-2 py-1 text-neutral-300"
+                  title="Number of records"
                 />
               )}
             </div>
-            <div className="flex items-center gap-2">
-              <SchemaSelector
-                onSelect={handleSchemaSelect}
-                selectedSchemaId={schemaId}
-                selectedTableId={tableId}
-              />
-            </div>
-          </div>
-
-          <textarea
-            ref={responseTextareaRef}
-            value={response}
-            onChange={(e) => setResponse(e.target.value)}
-            rows={responseType === 'ts' ? 6 : 10}
-            placeholder={responseType === 'ts'
-              ? `{name: string; email: string; price: number}`
-              : `{"name": "", "email": "", "price": 0}`}
-            className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 text-sm text-neutral-200 font-mono placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-600 resize-none"
-          />
-
-          <div className="mt-2 flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-7 gap-1 text-xs"
-              onClick={handleGeneratePreview}
-            >
-              <Play className="h-3 w-3" />
-              Preview
-            </Button>
-            {preview && (
-              <span className="text-xs text-neutral-500 ml-2">
-                Click Preview to see result
-              </span>
-            )}
-            <FakerTemplates onInsert={handleInsertFakerAtCursor} />
-          </div>
+          )}
         </div>
 
-        {(method === 'POST' || method === 'PUT') && (
-          <div className="border-t border-neutral-800 pt-4">
-            <button
-              type="button"
-              onClick={() => setShowPayload(!showPayload)}
-              className="flex items-center gap-2 text-sm text-neutral-400 hover:text-neutral-200"
-            >
-              <Code className="h-4 w-4" />
-              Payload Validation (Optional)
-              {showPayload ? ' ▲' : ' ▼'}
-            </button>
-
-            {showPayload && (
-              <div className="mt-3 space-y-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-neutral-400">Type:</span>
-                  <select
-                    value={payloadType}
-                    onChange={(e) => {
-                      setPayloadType(e.target.value as ResponseType);
-                      setPayload(e.target.value === 'ts' ? defaultPayloadTs : defaultPayloadJson);
-                    }}
-                    className="h-7 text-xs rounded border border-neutral-700 bg-neutral-800 px-2 py-1 text-neutral-300"
-                  >
-                    <option value="json">JSON</option>
-                    <option value="ts">TS</option>
-                  </select>
-
-                  {payloadType === 'json' && (
-                    <SchemaSelector
-                      onSelect={handlePayloadSchemaSelect}
-                      selectedSchemaId={payloadSchemaId}
-                      selectedTableId={payloadTableId}
-                    />
-                  )}
-                </div>
-
-                <textarea
-                  ref={payloadTextareaRef}
-                  value={payload}
-                  onChange={(e) => setPayload(e.target.value)}
-                  rows={4}
-                  placeholder={payloadType === 'ts'
-                    ? `{name: string; email: string}`
-                    : `{"name": "", "email": ""}`}
-                  className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 text-sm text-neutral-200 font-mono placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-600 resize-none"
-                />
-              </div>
-            )}
+        <div className="flex items-center justify-between py-3 border-t border-neutral-800">
+          <div className="flex items-center gap-2">
+            <Shield className="h-4 w-4 text-neutral-400" />
+            <span className="text-sm text-neutral-400">Requires Authentication</span>
           </div>
-        )}
+          <button
+            type="button"
+            onClick={() => setAuthRequired(!authRequired)}
+            className={`w-12 h-6 rounded-full transition-colors ${authRequired ? 'bg-primary-600' : 'bg-neutral-700'}`}
+          >
+            <div className={`w-5 h-5 rounded-full bg-white transition-transform ${authRequired ? 'translate-x-6' : 'translate-x-0.5'}`} />
+          </button>
+        </div>
 
         <div>
           <label className="text-xs text-neutral-400 mb-1.5 block">Delay (ms) - Optional</label>
@@ -445,7 +335,7 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
         )}
 
         <div className="flex justify-end gap-2 pt-2">
-          <Button variant="outline" onClick={isEditing ? () => { } : handleClose}>
+          <Button variant="outline" onClick={isEditing ? () => {} : handleClose}>
             {isEditing ? 'Close' : 'Cancel'}
           </Button>
           <Button onClick={handleSubmit}>

@@ -254,6 +254,66 @@ export class SchemaModel {
         }
       }
 
+      const relations = schema.relations.filter(r => r.fromTable === tableId);
+      for (const relation of relations) {
+        const relatedTable = schema.tables.find(t => t.id === relation.toTable);
+        if (!relatedTable) continue;
+
+        if (relation.type === 'one-to-many') {
+          const relatedData = this.generateFromRelatedTable(schemaId, relation.toTable, relation.fromField, relation.toField, row[relation.fromField || 'id'], 2);
+          row[relatedTable.name] = relatedData;
+        } else if (relation.type === 'one-to-one') {
+          const relatedData = this.generateFromRelatedTable(schemaId, relation.toTable, relation.fromField, relation.toField, row[relation.fromField || 'id'], 1);
+          if (relatedData.length > 0) {
+            row[relatedTable.name] = relatedData[0];
+          }
+        }
+      }
+
+      results.push(row);
+    }
+
+    return results;
+  }
+
+  private generateFromRelatedTable(schemaId: string, tableId: string, fromField?: string, toField?: string, parentId?: any, count: number = 1): object[] {
+    const schema = this.schemas.get(schemaId);
+    if (!schema) return [];
+
+    const table = schema.tables.find(t => t.id === tableId);
+    if (!table || table.fields.length === 0) return [];
+
+    const results: object[] = [];
+
+    for (let i = 0; i < count; i++) {
+      const row: Record<string, any> = {};
+
+      for (const field of table.fields) {
+        if (field.name === toField || field.name === 'id') continue;
+        
+        if (field.fakerTemplate) {
+          const template = field.fakerTemplate.replace(/\{\{faker\.(\w+)\}\}/g, '$1');
+          try {
+            row[field.name] = generateFakerValue(template as any);
+          } catch {
+            row[field.name] = field.type === 'string' ? 'sample' : null;
+          }
+        } else {
+          const fakerMethod = fieldTypeToFaker[field.type] || 'word';
+          try {
+            row[field.name] = generateFakerValue(fakerMethod as any);
+          } catch {
+            row[field.name] = field.type === 'string' ? 'sample' : null;
+          }
+        }
+      }
+
+      if (toField && parentId !== undefined) {
+        row[toField] = parentId;
+      } else if (table.fields.find(f => f.name === 'id')) {
+        row['id'] = Math.floor(Math.random() * 10000);
+      }
+
       results.push(row);
     }
 

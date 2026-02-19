@@ -59,9 +59,8 @@ export interface MockEndpoint {
   delay?: number;
   schemaRef?: SchemaRef;
   storedData?: object[];
-  payloadJson?: object;
-  payloadSchemaRef?: SchemaRef;
-  payloadType?: ResponseType;
+  responseKeys?: string[];
+  authRequired?: boolean;
   createdAt: string;
 }
 
@@ -73,9 +72,25 @@ export interface CreateEndpointDto {
   delay?: number;
   schemaRef?: SchemaRef;
   storedData?: object[];
-  payloadJson?: object;
-  payloadSchemaRef?: SchemaRef;
-  payloadType?: ResponseType;
+  responseKeys?: string[];
+  authRequired?: boolean;
+}
+
+export type AuthType = 'jwt' | 'basic' | 'apiKey' | 'bearer';
+
+export interface AuthSettings {
+  enabled: boolean;
+  type: AuthType;
+  jwtSecret?: string;
+  jwtExpiry: string;
+  apiKey?: string;
+  allowRegister: boolean;
+}
+
+export interface User {
+  id: string;
+  username: string;
+  createdAt: string;
 }
 
 export interface RequestLog {
