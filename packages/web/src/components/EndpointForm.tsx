@@ -173,7 +173,7 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
     }
 
     let parsedPayload = undefined;
-    if (showPayload) {
+    if (showPayload && (method === 'POST' || method === 'PUT')) {
       if (payloadType === 'json') {
         try {
           parsedPayload = inferJsonStructure(payload);
@@ -236,54 +236,7 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
     const end = textarea.selectionEnd;
     const text = textarea.value;
 
-    if (responseType === 'json') {
-      const before = text.substring(0, start);
-      const after = text.substring(end);
-      
-      const valueMatch = before.match(/"([^"]+)"\s*:\s*"?$/);
-      if (valueMatch) {
-        const newText = before + `"${valueMatch[1]}": "${template}"` + after;
-        setResponse(newText);
-      } else {
-        const insertPos = text.indexOf(':', start);
-        if (insertPos !== -1) {
-          const keyEnd = text.indexOf('"', insertPos + 1);
-          const valueStart = text.indexOf('"', keyEnd + 1);
-          if (valueStart !== -1) {
-            const beforeVal = text.substring(0, valueStart + 1);
-            const afterVal = text.substring(text.indexOf('"', valueStart + 1));
-            setResponse(beforeVal + template + afterVal);
-          }
-        }
-      }
-    } else {
-      const fields = parseTsStructure(response);
-      const cursorWordMatch = text.substring(0, start).match(/(\w+)\s*:\s*$/);
-      if (cursorWordMatch) {
-        const fieldName = cursorWordMatch[1];
-        const fieldType = fields[fieldName];
-        
-        const typeMap: Record<string, string> = {
-          string: '{{faker.name}}',
-          number: '{{faker.number}}',
-          boolean: '{{faker.boolean}}',
-          date: '{{faker.date}}',
-          email: '{{faker.email}}',
-          uuid: '{{faker.uuid}}',
-        };
-        
-        const newValue = typeMap[fieldType] || '{{faker.word}}';
-        
-        const before = text.substring(0, start);
-        const after = text.substring(end);
-        setResponse(before + `${fieldName}: ${newValue};` + after);
-      } else {
-        const selectedText = text.substring(start, end);
-        if (selectedText) {
-          setResponse(text.substring(0, start) + template + text.substring(end));
-        }
-      }
-    }
+    setResponse(text.substring(0, start) + template + text.substring(end));
   };
 
   const handleGeneratePreview = async () => {
@@ -422,55 +375,57 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
           </div>
         </div>
 
-        <div className="border-t border-neutral-800 pt-4">
-          <button
-            type="button"
-            onClick={() => setShowPayload(!showPayload)}
-            className="flex items-center gap-2 text-sm text-neutral-400 hover:text-neutral-200"
-          >
-            <Code className="h-4 w-4" />
-            Payload Validation (Optional)
-            {showPayload ? ' ▲' : ' ▼'}
-          </button>
-          
-          {showPayload && (
-            <div className="mt-3 space-y-3">
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-neutral-400">Type:</span>
-                <select
-                  value={payloadType}
-                  onChange={(e) => {
-                    setPayloadType(e.target.value as ResponseType);
-                    setPayload(e.target.value === 'ts' ? defaultPayloadTs : defaultPayloadJson);
-                  }}
-                  className="h-7 text-xs rounded border border-neutral-700 bg-neutral-800 px-2 py-1 text-neutral-300"
-                >
-                  <option value="json">JSON</option>
-                  <option value="ts">TS</option>
-                </select>
+        {(method === 'POST' || method === 'PUT') && (
+          <div className="border-t border-neutral-800 pt-4">
+            <button
+              type="button"
+              onClick={() => setShowPayload(!showPayload)}
+              className="flex items-center gap-2 text-sm text-neutral-400 hover:text-neutral-200"
+            >
+              <Code className="h-4 w-4" />
+              Payload Validation (Optional)
+              {showPayload ? ' ▲' : ' ▼'}
+            </button>
+            
+            {showPayload && (
+              <div className="mt-3 space-y-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-neutral-400">Type:</span>
+                  <select
+                    value={payloadType}
+                    onChange={(e) => {
+                      setPayloadType(e.target.value as ResponseType);
+                      setPayload(e.target.value === 'ts' ? defaultPayloadTs : defaultPayloadJson);
+                    }}
+                    className="h-7 text-xs rounded border border-neutral-700 bg-neutral-800 px-2 py-1 text-neutral-300"
+                  >
+                    <option value="json">JSON</option>
+                    <option value="ts">TS</option>
+                  </select>
+                  
+                  {payloadType === 'json' && (
+                    <SchemaSelector
+                      onSelect={handlePayloadSchemaSelect}
+                      selectedSchemaId={payloadSchemaId}
+                      selectedTableId={payloadTableId}
+                    />
+                  )}
+                </div>
                 
-                {payloadType === 'json' && (
-                  <SchemaSelector
-                    onSelect={handlePayloadSchemaSelect}
-                    selectedSchemaId={payloadSchemaId}
-                    selectedTableId={payloadTableId}
-                  />
-                )}
+                <textarea
+                  ref={payloadTextareaRef}
+                  value={payload}
+                  onChange={(e) => setPayload(e.target.value)}
+                  rows={4}
+                  placeholder={payloadType === 'ts' 
+                    ? `{name: string; email: string}` 
+                    : `{"name": "", "email": ""}`}
+                  className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 text-sm text-neutral-200 font-mono placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-600 resize-none"
+                />
               </div>
-              
-              <textarea
-                ref={payloadTextareaRef}
-                value={payload}
-                onChange={(e) => setPayload(e.target.value)}
-                rows={4}
-                placeholder={payloadType === 'ts' 
-                  ? `{name: string; email: string}` 
-                  : `{"name": "", "email": ""}`}
-                className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 text-sm text-neutral-200 font-mono placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-600 resize-none"
-              />
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
 
         <div>
           <label className="text-xs text-neutral-400 mb-1.5 block">Delay (ms) - Optional</label>
