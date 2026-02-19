@@ -44,7 +44,7 @@ export function FakerTemplates({ onInsert }: { onInsert: (template: string) => v
             className="fixed inset-0 z-40" 
             onClick={() => setOpen(false)} 
           />
-          <div className="absolute right-0 top-full mt-1 z-50 w-48 bg-neutral-800 border border-neutral-700 rounded-md shadow-lg py-1 max-h-60 overflow-auto">
+          <div className="absolute bottom-full right-0 mb-1 z-50 w-48 bg-neutral-800 border border-neutral-700 rounded-md shadow-lg py-1 max-h-80 overflow-y-auto">
             {fakerTemplates.map((template) => (
               <button
                 key={template.value}

@@ -1,10 +1,13 @@
 import type { SchemaRelation, SchemaTable } from '@/types';
-import { TABLE_WIDTH, TABLE_HEADER_HEIGHT, FIELD_ROW_HEIGHT } from './TableNode';
 
 interface RelationLinesProps {
   relations: SchemaRelation[];
   tables: SchemaTable[];
 }
+
+const TABLE_WIDTH = 256;
+const TABLE_HEADER_HEIGHT = 40;
+const FIELD_ROW_HEIGHT = 24;
 
 const relationColors: Record<string, string> = {
   'one-to-one': '#22c55e',
