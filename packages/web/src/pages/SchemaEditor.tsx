@@ -35,6 +35,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { TableNode } from '@/components/TableNode';
+import { RelationLines } from '@/components/RelationLines';
 import { FieldEditor } from '@/components/FieldEditor';
 import { RelationshipEditor } from '@/components/RelationshipEditor';
 import { schemasApi } from '@/services/api';
@@ -366,6 +367,7 @@ export function SchemaEditor() {
               transformOrigin: '0 0',
             }}
           >
+            <RelationLines relations={schema.relations} tables={schema.tables} />
             {schema.tables.map((table) => (
               <TableNode
                 key={table.id}

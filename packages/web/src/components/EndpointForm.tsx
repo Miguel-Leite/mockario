@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Plus, Code, Play } from 'lucide-react';
 import {
   Dialog,
@@ -133,20 +133,13 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
   const [payloadType, setPayloadType] = useState<ResponseType>(endpoint?.payloadType || 'json');
   const [payloadSchemaId, setPayloadSchemaId] = useState(endpoint?.payloadSchemaRef?.schemaId || '');
   const [payloadTableId, setPayloadTableId] = useState(endpoint?.payloadSchemaRef?.tableId || '');
-  const [selectedField, setSelectedField] = useState<string>('');
   const [preview, setPreview] = useState<string>('');
   const [error, setError] = useState('');
+  
+  const responseTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const payloadTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   const isEditing = !!endpoint;
-
-  const getFieldsFromJson = (jsonStr: string): string[] => {
-    try {
-      const parsed = JSON.parse(jsonStr);
-      return Object.keys(parsed);
-    } catch {
-      return [];
-    }
-  };
 
   const handleSubmit = () => {
     setError('');
@@ -230,33 +223,46 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
     setPayloadType('json');
     setPayloadSchemaId('');
     setPayloadTableId('');
-    setSelectedField('');
     setPreview('');
     setError('');
     setOpen(false);
   };
 
-  const handleInsertTemplate = (template: string) => {
-    if (!selectedField) {
-      return;
-    }
+  const handleInsertFakerAtCursor = (template: string) => {
+    const textarea = responseTextareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
 
     if (responseType === 'json') {
-      setResponse(prev => {
-        try {
-          const parsed = JSON.parse(prev);
-          if (parsed[selectedField] !== undefined) {
-            parsed[selectedField] = template;
-            return JSON.stringify(parsed, null, 2);
+      const before = text.substring(0, start);
+      const after = text.substring(end);
+      
+      const valueMatch = before.match(/"([^"]+)"\s*:\s*"?$/);
+      if (valueMatch) {
+        const newText = before + `"${valueMatch[1]}": "${template}"` + after;
+        setResponse(newText);
+      } else {
+        const insertPos = text.indexOf(':', start);
+        if (insertPos !== -1) {
+          const keyEnd = text.indexOf('"', insertPos + 1);
+          const valueStart = text.indexOf('"', keyEnd + 1);
+          if (valueStart !== -1) {
+            const beforeVal = text.substring(0, valueStart + 1);
+            const afterVal = text.substring(text.indexOf('"', valueStart + 1));
+            setResponse(beforeVal + template + afterVal);
           }
-          return prev;
-        } catch {
-          return prev;
         }
-      });
+      }
     } else {
       const fields = parseTsStructure(response);
-      if (fields[selectedField]) {
+      const cursorWordMatch = text.substring(0, start).match(/(\w+)\s*:\s*$/);
+      if (cursorWordMatch) {
+        const fieldName = cursorWordMatch[1];
+        const fieldType = fields[fieldName];
+        
         const typeMap: Record<string, string> = {
           string: '{{faker.name}}',
           number: '{{faker.number}}',
@@ -265,18 +271,17 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
           email: '{{faker.email}}',
           uuid: '{{faker.uuid}}',
         };
-        const newValue = typeMap[fields[selectedField]] || '{{faker.word}}';
         
-        const fieldsList = parseTsStructure(response);
-        const newResponse: Record<string, any> = {};
-        for (const [key, type] of Object.entries(fieldsList)) {
-          if (key === selectedField) {
-            newResponse[key] = newValue;
-          } else {
-            newResponse[key] = type === 'number' ? 0 : type === 'boolean' ? false : '{{faker.word}}';
-          }
+        const newValue = typeMap[fieldType] || '{{faker.word}}';
+        
+        const before = text.substring(0, start);
+        const after = text.substring(end);
+        setResponse(before + `${fieldName}: ${newValue};` + after);
+      } else {
+        const selectedText = text.substring(start, end);
+        if (selectedText) {
+          setResponse(text.substring(0, start) + template + text.substring(end));
         }
-        setResponse(JSON.stringify(newResponse, null, 2));
       }
     }
   };
@@ -304,11 +309,6 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
         const numCount = parseInt(count) || 1;
         const data = await schemasApi.generateFromTable(newSchemaId, newTableId, numCount);
         setResponse(JSON.stringify(data, null, 2));
-        
-        const fields = Object.keys(data[0] || {});
-        if (fields.length > 0) {
-          setSelectedField(fields[0]);
-        }
       } catch (err) {
         console.error('Failed to generate from schema:', err);
       }
@@ -328,8 +328,6 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
       }
     }
   };
-
-  const responseFields = responseType === 'json' ? getFieldsFromJson(response) : Object.keys(parseTsStructure(response));
 
   const dialogContent = (
     <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -366,7 +364,6 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
                 onChange={(e) => {
                   setResponseType(e.target.value as ResponseType);
                   setResponse(e.target.value === 'ts' ? defaultTs : defaultJson);
-                  setSelectedField('');
                 }}
                 className="h-6 text-xs rounded border border-neutral-700 bg-neutral-800 px-2 py-1 text-neutral-300"
               >
@@ -395,20 +392,8 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
             </div>
           </div>
 
-          <div className="mb-2">
-            <select
-              value={selectedField}
-              onChange={(e) => setSelectedField(e.target.value)}
-              className="h-7 text-xs rounded border border-neutral-700 bg-neutral-800 px-2 py-1 text-neutral-300 w-full"
-            >
-              <option value="">Select field to edit...</option>
-              {responseFields.map(field => (
-                <option key={field} value={field}>{field}</option>
-              ))}
-            </select>
-          </div>
-
           <textarea
+            ref={responseTextareaRef}
             value={response}
             onChange={(e) => setResponse(e.target.value)}
             rows={responseType === 'ts' ? 6 : 10}
@@ -418,25 +403,23 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
             className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 text-sm text-neutral-200 font-mono placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-600 resize-none"
           />
 
-          {selectedField && (
-            <div className="mt-2 flex items-center gap-2">
-              <FakerTemplates onInsert={handleInsertTemplate} />
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-7 gap-1 text-xs"
-                onClick={handleGeneratePreview}
-              >
-                <Play className="h-3 w-3" />
-                Preview
-              </Button>
-              {preview && (
-                <span className="text-xs text-neutral-500 ml-2">
-                  Click Preview to see result
-                </span>
-              )}
-            </div>
-          )}
+          <div className="mt-2 flex items-center gap-2">
+            <FakerTemplates onInsert={handleInsertFakerAtCursor} />
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-7 gap-1 text-xs"
+              onClick={handleGeneratePreview}
+            >
+              <Play className="h-3 w-3" />
+              Preview
+            </Button>
+            {preview && (
+              <span className="text-xs text-neutral-500 ml-2">
+                Click Preview to see result
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="border-t border-neutral-800 pt-4">
@@ -476,6 +459,7 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
               </div>
               
               <textarea
+                ref={payloadTextareaRef}
                 value={payload}
                 onChange={(e) => setPayload(e.target.value)}
                 rows={4}

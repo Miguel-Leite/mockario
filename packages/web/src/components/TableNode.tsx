@@ -9,6 +9,10 @@ interface TableNodeProps {
   onDelete: () => void;
 }
 
+export const TABLE_WIDTH = 256;
+export const TABLE_HEADER_HEIGHT = 40;
+export const FIELD_ROW_HEIGHT = 28;
+
 const fieldTypeColors: Record<string, string> = {
   string: 'bg-blue-500/20 text-blue-400',
   number: 'bg-green-500/20 text-green-400',
@@ -33,10 +37,12 @@ export function TableNode({ table, isSelected, onClick, onDelete }: TableNodePro
     }
     : undefined;
 
+  const tableHeight = TABLE_HEADER_HEIGHT + Math.max(table.fields.length * FIELD_ROW_HEIGHT, 48);
+
   return (
     <div
       ref={setNodeRef}
-      style={{ ...style, left: table.position.x, top: table.position.y }}
+      style={{ ...style, left: table.position.x, top: table.position.y, height: tableHeight }}
       className={`absolute w-64 bg-neutral-900 border rounded-lg shadow-lg transition-shadow ${isSelected
           ? 'border-primary-600 ring-2 ring-primary-600/30'
           : 'border-neutral-700 hover:border-neutral-600'
