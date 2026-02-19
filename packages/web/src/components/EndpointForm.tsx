@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Code } from 'lucide-react';
+import { Plus, Code, Play } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -20,10 +20,103 @@ interface EndpointFormProps {
 }
 
 const defaultJson = `{
-  "message": "Hello World"
+  "name": "",
+  "email": "",
+  "price": 0,
+  "active": false
 }`;
 
-const defaultTs = `"{{faker.name}}"`;
+const defaultTs = `{
+  name: string;
+  email: string;
+  price: number;
+  active: boolean;
+}`;
+
+const defaultPayloadJson = `{
+  "name": "",
+  "email": ""
+}`;
+
+const defaultPayloadTs = `{
+  name: string;
+  email: string;
+}`;
+
+function inferJsonStructure(jsonString: string): object {
+  try {
+    const parsed = JSON.parse(jsonString);
+    const result: Record<string, any> = {};
+    
+    for (const [key, value] of Object.entries(parsed)) {
+      const type = typeof value;
+      if (type === 'string') {
+        result[key] = value === '' ? 'string' : value;
+      } else if (type === 'number') {
+        result[key] = value;
+      } else if (type === 'boolean') {
+        result[key] = value;
+      } else if (type === 'object') {
+        if (Array.isArray(value)) {
+          result[key] = [];
+        } else {
+          result[key] = {};
+        }
+      }
+    }
+    
+    return result;
+  } catch {
+    return {};
+  }
+}
+
+function parseTsStructure(tsString: string): Record<string, string> {
+  const result: Record<string, string> = {};
+  const matches = tsString.matchAll(/(\w+)\s*:\s*(\w+)/g);
+  for (const match of matches) {
+    result[match[1]] = match[2];
+  }
+  return result;
+}
+
+function generateFromTsStructure(tsString: string): object {
+  const fields = parseTsStructure(tsString);
+  const result: Record<string, any> = {};
+  
+  for (const [key, type] of Object.entries(fields)) {
+    switch (type.toLowerCase()) {
+      case 'string':
+        result[key] = '{{faker.name}}';
+        break;
+      case 'number':
+        result[key] = '{{faker.number}}';
+        break;
+      case 'boolean':
+        result[key] = '{{faker.boolean}}';
+        break;
+      case 'date':
+        result[key] = '{{faker.date}}';
+        break;
+      case 'email':
+        result[key] = '{{faker.email}}';
+        break;
+      case 'uuid':
+        result[key] = '{{faker.uuid}}';
+        break;
+      case 'array':
+        result[key] = [];
+        break;
+      case 'object':
+        result[key] = {};
+        break;
+      default:
+        result[key] = '{{faker.word}}';
+    }
+  }
+  
+  return result;
+}
 
 export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps) {
   const [open, setOpen] = useState(false);
@@ -36,13 +129,24 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
   const [schemaId, setSchemaId] = useState(endpoint?.schemaRef?.schemaId || '');
   const [tableId, setTableId] = useState(endpoint?.schemaRef?.tableId || '');
   const [showPayload, setShowPayload] = useState(false);
-  const [payload, setPayload] = useState(endpoint?.payloadJson ? JSON.stringify(endpoint.payloadJson, null, 2) : defaultJson);
+  const [payload, setPayload] = useState(endpoint?.payloadJson ? JSON.stringify(endpoint.payloadJson, null, 2) : defaultPayloadJson);
   const [payloadType, setPayloadType] = useState<ResponseType>(endpoint?.payloadType || 'json');
   const [payloadSchemaId, setPayloadSchemaId] = useState(endpoint?.payloadSchemaRef?.schemaId || '');
   const [payloadTableId, setPayloadTableId] = useState(endpoint?.payloadSchemaRef?.tableId || '');
+  const [selectedField, setSelectedField] = useState<string>('');
+  const [preview, setPreview] = useState<string>('');
   const [error, setError] = useState('');
 
   const isEditing = !!endpoint;
+
+  const getFieldsFromJson = (jsonStr: string): string[] => {
+    try {
+      const parsed = JSON.parse(jsonStr);
+      return Object.keys(parsed);
+    } catch {
+      return [];
+    }
+  };
 
   const handleSubmit = () => {
     setError('');
@@ -60,26 +164,37 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
     let parsedResponse;
     if (responseType === 'json') {
       try {
-        parsedResponse = JSON.parse(response);
+        JSON.parse(response);
+        parsedResponse = inferJsonStructure(response);
       } catch {
         setError('Invalid JSON response');
         return;
       }
     } else {
-      parsedResponse = response;
+      const fields = parseTsStructure(response);
+      if (Object.keys(fields).length === 0) {
+        setError('Invalid TS structure. Use format: { field: type; }');
+        return;
+      }
+      parsedResponse = generateFromTsStructure(response);
     }
 
     let parsedPayload = undefined;
-    if (showPayload && (payloadSchemaId || payload)) {
-      if (payloadType === 'json' && payload) {
+    if (showPayload) {
+      if (payloadType === 'json') {
         try {
-          parsedPayload = JSON.parse(payload);
+          parsedPayload = inferJsonStructure(payload);
         } catch {
           setError('Invalid JSON payload');
           return;
         }
       } else {
-        parsedPayload = payload;
+        const fields = parseTsStructure(payload);
+        if (Object.keys(fields).length === 0) {
+          setError('Invalid TS structure for payload');
+          return;
+        }
+        parsedPayload = generateFromTsStructure(payload);
       }
     }
 
@@ -111,28 +226,72 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
     setSchemaId('');
     setTableId('');
     setShowPayload(false);
-    setPayload(defaultJson);
+    setPayload(defaultPayloadJson);
     setPayloadType('json');
     setPayloadSchemaId('');
     setPayloadTableId('');
+    setSelectedField('');
+    setPreview('');
     setError('');
     setOpen(false);
   };
 
   const handleInsertTemplate = (template: string) => {
+    if (!selectedField) {
+      return;
+    }
+
     if (responseType === 'json') {
       setResponse(prev => {
         try {
           const parsed = JSON.parse(prev);
-          const key = Object.keys(parsed)[0] || 'field';
-          parsed[key] = template;
-          return JSON.stringify(parsed, null, 2);
+          if (parsed[selectedField] !== undefined) {
+            parsed[selectedField] = template;
+            return JSON.stringify(parsed, null, 2);
+          }
+          return prev;
         } catch {
           return prev;
         }
       });
     } else {
-      setResponse(template.replace('{{faker.', '').replace('}}', '').trim());
+      const fields = parseTsStructure(response);
+      if (fields[selectedField]) {
+        const typeMap: Record<string, string> = {
+          string: '{{faker.name}}',
+          number: '{{faker.number}}',
+          boolean: '{{faker.boolean}}',
+          date: '{{faker.date}}',
+          email: '{{faker.email}}',
+          uuid: '{{faker.uuid}}',
+        };
+        const newValue = typeMap[fields[selectedField]] || '{{faker.word}}';
+        
+        const fieldsList = parseTsStructure(response);
+        const newResponse: Record<string, any> = {};
+        for (const [key, type] of Object.entries(fieldsList)) {
+          if (key === selectedField) {
+            newResponse[key] = newValue;
+          } else {
+            newResponse[key] = type === 'number' ? 0 : type === 'boolean' ? false : '{{faker.word}}';
+          }
+        }
+        setResponse(JSON.stringify(newResponse, null, 2));
+      }
+    }
+  };
+
+  const handleGeneratePreview = async () => {
+    if (responseType === 'json') {
+      try {
+        JSON.parse(response);
+        setPreview(JSON.stringify(inferJsonStructure(response), null, 2));
+      } catch {
+        setPreview('Invalid JSON');
+      }
+    } else {
+      const generated = generateFromTsStructure(response);
+      setPreview(JSON.stringify(generated, null, 2));
     }
   };
 
@@ -145,6 +304,11 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
         const numCount = parseInt(count) || 1;
         const data = await schemasApi.generateFromTable(newSchemaId, newTableId, numCount);
         setResponse(JSON.stringify(data, null, 2));
+        
+        const fields = Object.keys(data[0] || {});
+        if (fields.length > 0) {
+          setSelectedField(fields[0]);
+        }
       } catch (err) {
         console.error('Failed to generate from schema:', err);
       }
@@ -164,6 +328,8 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
       }
     }
   };
+
+  const responseFields = responseType === 'json' ? getFieldsFromJson(response) : Object.keys(parseTsStructure(response));
 
   const dialogContent = (
     <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -200,6 +366,7 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
                 onChange={(e) => {
                   setResponseType(e.target.value as ResponseType);
                   setResponse(e.target.value === 'ts' ? defaultTs : defaultJson);
+                  setSelectedField('');
                 }}
                 className="h-6 text-xs rounded border border-neutral-700 bg-neutral-800 px-2 py-1 text-neutral-300"
               >
@@ -225,18 +392,51 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
                 selectedSchemaId={schemaId}
                 selectedTableId={tableId}
               />
-              {responseType === 'json' && (
-                <FakerTemplates onInsert={handleInsertTemplate} />
-              )}
             </div>
           </div>
+
+          <div className="mb-2">
+            <select
+              value={selectedField}
+              onChange={(e) => setSelectedField(e.target.value)}
+              className="h-7 text-xs rounded border border-neutral-700 bg-neutral-800 px-2 py-1 text-neutral-300 w-full"
+            >
+              <option value="">Select field to edit...</option>
+              {responseFields.map(field => (
+                <option key={field} value={field}>{field}</option>
+              ))}
+            </select>
+          </div>
+
           <textarea
             value={response}
             onChange={(e) => setResponse(e.target.value)}
-            rows={responseType === 'ts' ? 3 : 8}
-            placeholder={responseType === 'ts' ? '{{faker.name}}' : '{"key": "value"}'}
+            rows={responseType === 'ts' ? 6 : 10}
+            placeholder={responseType === 'ts' 
+              ? `{name: string; email: string; price: number}` 
+              : `{"name": "", "email": "", "price": 0}`}
             className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 text-sm text-neutral-200 font-mono placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-600 resize-none"
           />
+
+          {selectedField && (
+            <div className="mt-2 flex items-center gap-2">
+              <FakerTemplates onInsert={handleInsertTemplate} />
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7 gap-1 text-xs"
+                onClick={handleGeneratePreview}
+              >
+                <Play className="h-3 w-3" />
+                Preview
+              </Button>
+              {preview && (
+                <span className="text-xs text-neutral-500 ml-2">
+                  Click Preview to see result
+                </span>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="border-t border-neutral-800 pt-4">
@@ -258,15 +458,15 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
                   value={payloadType}
                   onChange={(e) => {
                     setPayloadType(e.target.value as ResponseType);
-                    setPayload(e.target.value === 'ts' ? defaultTs : defaultJson);
+                    setPayload(e.target.value === 'ts' ? defaultPayloadTs : defaultPayloadJson);
                   }}
                   className="h-7 text-xs rounded border border-neutral-700 bg-neutral-800 px-2 py-1 text-neutral-300"
                 >
-                  <option value="json">JSON Schema</option>
-                  <option value="ts">Schema Reference</option>
+                  <option value="json">JSON</option>
+                  <option value="ts">TS</option>
                 </select>
                 
-                {payloadType === 'ts' && (
+                {payloadType === 'json' && (
                   <SchemaSelector
                     onSelect={handlePayloadSchemaSelect}
                     selectedSchemaId={payloadSchemaId}
@@ -275,15 +475,15 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
                 )}
               </div>
               
-              {payloadType === 'json' && (
-                <textarea
-                  value={payload}
-                  onChange={(e) => setPayload(e.target.value)}
-                  rows={4}
-                  placeholder='{"email": {"required": true}, "name": {"required": true}}'
-                  className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 text-sm text-neutral-200 font-mono placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-600 resize-none"
-                />
-              )}
+              <textarea
+                value={payload}
+                onChange={(e) => setPayload(e.target.value)}
+                rows={4}
+                placeholder={payloadType === 'ts' 
+                  ? `{name: string; email: string}` 
+                  : `{"name": "", "email": ""}`}
+                className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 text-sm text-neutral-200 font-mono placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-600 resize-none"
+              />
             </div>
           )}
         </div>

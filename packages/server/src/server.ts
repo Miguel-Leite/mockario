@@ -126,6 +126,7 @@ export class MockServer {
       path,
       method: 'GET',
       response: [body],
+      responseType: 'json',
       storedData: [body],
     });
 
@@ -164,7 +165,10 @@ export class MockServer {
   private validatePayload(body: any, endpoint: any): boolean {
     if (endpoint.payloadJson) {
       for (const key of Object.keys(endpoint.payloadJson)) {
-        if (endpoint.payloadJson[key].required && !body[key]) {
+        const fieldValue = endpoint.payloadJson[key];
+        const isRequired = fieldValue === '' || fieldValue === 'required';
+        
+        if (isRequired && (body[key] === undefined || body[key] === null)) {
           return false;
         }
       }
@@ -176,7 +180,7 @@ export class MockServer {
     if (endpoint.responseType === 'ts' && typeof endpoint.response === 'string') {
       try {
         const processed = processFakerTemplate(endpoint.response);
-        return processed;
+        return JSON.parse(processed);
       } catch {
         return endpoint.response;
       }
