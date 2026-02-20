@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import { createMocklyApi } from './api';
+import { createMockarioApi } from './api';
 import type { MockEndpoint, CreateEndpointDto } from './types';
 
 export interface UseMockEndpointsOptions {
@@ -19,11 +19,11 @@ export interface UseMockEndpointsReturn {
 }
 
 export function useMockEndpoints(baseUrl: string): UseMockEndpointsReturn {
-  const [api] = useState(() => createMocklyApi(baseUrl));
+  const [api] = useState(() => createMockarioApi(baseUrl));
   const queryClient = useQueryClient();
 
   const endpointsQuery = useQuery({
-    queryKey: ['mockly', 'endpoints'],
+    queryKey: ['mockario', 'endpoints'],
     queryFn: () => api.getEndpoints(),
     staleTime: 30000,
   });
@@ -31,7 +31,7 @@ export function useMockEndpoints(baseUrl: string): UseMockEndpointsReturn {
   const createMutation = useMutation({
     mutationFn: (dto: CreateEndpointDto) => api.createEndpoint(dto),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['mockly', 'endpoints'] });
+      queryClient.invalidateQueries({ queryKey: ['mockario', 'endpoints'] });
     },
   });
 
@@ -39,14 +39,14 @@ export function useMockEndpoints(baseUrl: string): UseMockEndpointsReturn {
     mutationFn: ({ id, dto }: { id: string; dto: Partial<CreateEndpointDto> }) =>
       api.updateEndpoint(id, dto),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['mockly', 'endpoints'] });
+      queryClient.invalidateQueries({ queryKey: ['mockario', 'endpoints'] });
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.deleteEndpoint(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['mockly', 'endpoints'] });
+      queryClient.invalidateQueries({ queryKey: ['mockario', 'endpoints'] });
     },
   });
 
@@ -64,10 +64,10 @@ export function useMockEndpoints(baseUrl: string): UseMockEndpointsReturn {
 }
 
 export function useMockEndpoint(baseUrl: string, id: string) {
-  const [api] = useState(() => createMocklyApi(baseUrl));
+  const [api] = useState(() => createMockarioApi(baseUrl));
 
   return useQuery({
-    queryKey: ['mockly', 'endpoint', id],
+    queryKey: ['mockario', 'endpoint', id],
     queryFn: () => api.getEndpoint(id),
     enabled: !!id,
   });

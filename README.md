@@ -1,18 +1,20 @@
-# Mockly
+# Mockario
 
-[![npm version](https://img.shields.io/npm/v/mockly)](https://www.npmjs.com/package/mockly)
-[![Build](https://img.shields.io/github/actions/workflow/status/Miguel-Leite/mockly/ci.yml)](https://github.com/Miguel-Leite/mockly/actions)
-[![Tests](https://img.shields.io/badge/tests-56%20passed-brightgreen)](https://github.com/Miguel-Leite/mockly)
-[![License](https://img.shields.io/npm/l/mockly)](LICENSE)
-[![Node.js](https://img.shields.io/node/v/mockly)](https://nodejs.org)
+[![npm version](https://img.shields.io/npm/v/mockario)](https://www.npmjs.com/package/mockario)
+[![Build](https://img.shields.io/github/actions/workflow/status/Miguel-Leite/mockario/ci.yml)](https://github.com/Miguel-Leite/mockario/actions)
+[![Tests](https://img.shields.io/badge/tests-56%20passed-brightgreen)](https://github.com/Miguel-Leite/mockario)
+[![License](https://img.shields.io/npm/l/mockario)](LICENSE)
+[![Node.js](https://img.shields.io/node/v/mockario)](https://nodejs.org)
 
-⚠️ **Mockly is for development only. Not for production.**
+Mock APIs rapidinho, desenvolva sem esperar o backend
+
+⚠️ **Mockario is for development only. Not for production.**
 
 ---
 
-## What is Mockly?
+## What is Mockario?
 
-Mockly is a powerful tool for creating mock APIs locally, enabling frontend developers to work independently without waiting for the backend to be ready. Create endpoints, generate fake data, test authentication, and more - all from a beautiful visual interface.
+Mockario is a powerful tool for creating mock APIs locally, enabling frontend developers to work independently without waiting for the backend to be ready. Create endpoints, generate fake data, test authentication, and more - all from a beautiful visual interface.
 
 ---
 
@@ -28,7 +30,7 @@ This opens:
 
 ---
 
-## When should I use Mockly?
+## When should I use Mockario?
 
 - **Prototyping** - Quickly create API endpoints for new features
 - **Frontend Development** - Work without waiting for backend implementation
@@ -64,7 +66,7 @@ Built-in Postman-like HTTP client to test your endpoints. Supports authenticatio
 Protect endpoints with JWT, Basic Auth, or API Key. Auto-generates /auth/login, /auth/register, and /auth/me endpoints.
 
 ### React Hooks
-Use `@mockly/hooks` package to consume Mockly APIs in your React applications.
+Use `@mockly/hooks` package to consume Mockario APIs in your React applications.
 
 ---
 

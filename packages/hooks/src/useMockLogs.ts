@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import { createMocklyApi } from './api';
+import { createMockarioApi } from './api';
 import type { RequestLog } from './types';
 
 export interface UseMockLogsReturn {
@@ -13,11 +13,11 @@ export interface UseMockLogsReturn {
 }
 
 export function useMockLogs(baseUrl: string): UseMockLogsReturn {
-  const [api] = useState(() => createMocklyApi(baseUrl));
+  const [api] = useState(() => createMockarioApi(baseUrl));
   const queryClient = useQueryClient();
 
   const logsQuery = useQuery({
-    queryKey: ['mockly', 'logs'],
+    queryKey: ['mockario', 'logs'],
     queryFn: () => api.getLogs(),
     staleTime: 5000,
     refetchInterval: 10000,
@@ -26,7 +26,7 @@ export function useMockLogs(baseUrl: string): UseMockLogsReturn {
   const clearMutation = useMutation({
     mutationFn: () => api.clearLogs(),
     onSuccess: () => {
-      queryClient.setQueryData(['mockly', 'logs'], []);
+      queryClient.setQueryData(['mockario', 'logs'], []);
     },
   });
 

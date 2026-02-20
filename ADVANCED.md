@@ -1,6 +1,6 @@
 # Advanced Features
 
-Complete documentation for all Mockly features.
+Complete documentation for all Mockario features.
 
 ---
 
@@ -22,7 +22,7 @@ Complete documentation for all Mockly features.
 
 ## 1. Authentication
 
-Mockly supports multiple authentication types to protect your endpoints.
+Mockario supports multiple authentication types to protect your endpoints.
 
 ### Enabling Authentication
 
@@ -259,7 +259,7 @@ Click "Apply to Headers" to add the auth to your request.
 
 ## 4. React Hooks
 
-Use `@mockly/hooks` to consume Mockly APIs in your React applications.
+Use `@mockly/hooks` to consume Mockario APIs in your React applications.
 
 ### Installation
 
@@ -270,13 +270,13 @@ npm install @mockly/hooks
 ### Quick Start
 
 ```tsx
-import { MocklyProvider, useMockEndpoints, useMockServer } from '@mockly/hooks';
+import { MockarioProvider, useMockEndpoints, useMockServer } from '@mockly/hooks';
 
 function App() {
   return (
-    <MocklyProvider baseUrl="http://localhost:3001">
+    <MockarioProvider baseUrl="http://localhost:3001">
       <Dashboard />
-    </MocklyProvider>
+    </MockarioProvider>
   );
 }
 
@@ -514,7 +514,7 @@ Or with example:
 
 ## 8. Stored Data
 
-Mockly can persist data sent via POST/PUT requests.
+Mockario can persist data sent via POST/PUT requests.
 
 ### How It Works
 
@@ -551,7 +551,7 @@ GET http://localhost:3001/api/users
 
 ## 9. Auto-create Endpoints
 
-Mockly can automatically create endpoints from incoming requests.
+Mockario can automatically create endpoints from incoming requests.
 
 ### How It Works
 

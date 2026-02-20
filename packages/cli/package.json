@@ -1,11 +1,11 @@
 {
-  "name": "mockly-cli",
+  "name": "mockario-cli",
   "version": "1.0.0",
-  "description": "Mockly CLI - Orchestrate mock server and web interface",
+  "description": "Mockario CLI - Orchestrate mock server and web interface",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "mockly": "./dist/index.js"
+    "mockario": "./dist/index.js"
   },
   "scripts": {
     "dev": "ts-node src/index.ts",

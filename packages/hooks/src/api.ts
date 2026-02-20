@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 import type { MockEndpoint, CreateEndpointDto, RequestLog } from './types';
 
-export class MocklyApi {
+export class MockarioApi {
   private client: AxiosInstance;
 
   constructor(baseUrl: string) {
@@ -56,6 +56,6 @@ export class MocklyApi {
   }
 }
 
-export function createMocklyApi(baseUrl: string): MocklyApi {
-  return new MocklyApi(baseUrl);
+export function createMockarioApi(baseUrl: string): MockarioApi {
+  return new MockarioApi(baseUrl);
 }

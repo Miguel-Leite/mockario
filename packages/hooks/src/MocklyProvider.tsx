@@ -10,11 +10,11 @@ export const queryClient = new QueryClient({
   },
 });
 
-export interface MocklyProviderProps {
+export interface MockarioProviderProps {
   children: ReactNode;
 }
 
-export function MocklyProvider({ children }: MocklyProviderProps) {
+export function MockarioProvider({ children }: MockarioProviderProps) {
   return (
     <QueryClientProvider client={queryClient}>
       {children}

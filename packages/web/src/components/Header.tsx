@@ -18,7 +18,7 @@ export function Header({ serverConnected = true }: HeaderProps) {
             <div className="p-1.5 bg-primary-600/20 rounded-lg">
               <Server className="h-5 w-5 text-primary-600" />
             </div>
-            <h1 className="text-lg font-semibold text-neutral-100">Mockly</h1>
+            <h1 className="text-lg font-semibold text-neutral-100">Mockario</h1>
           </div>
           <nav className="flex items-center gap-1">
             <Link

@@ -1,7 +1,7 @@
 {
-  "name": "@mockly/hooks",
+  "name": "@mockario/hooks",
   "version": "1.0.0",
-  "description": "React hooks for Mockly - Consume Mockly APIs from your React applications",
+  "description": "React hooks for Mockario - Consume Mockario APIs from your React applications",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -22,7 +22,7 @@
   "keywords": [
     "mock",
     "api",
-    "mockly",
+    "mockario",
     "hooks",
     "react",
     "testing"

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { createMocklyApi } from './api';
+import { createMockarioApi } from './api';
 
 export interface UseMockServerReturn {
   isConnected: boolean;
@@ -11,7 +11,7 @@ export interface UseMockServerReturn {
 }
 
 export function useMockServer(baseUrl: string): UseMockServerReturn {
-  const [api] = useState(() => createMocklyApi(baseUrl));
+  const [api] = useState(() => createMockarioApi(baseUrl));
   const [isConnected, setIsConnected] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
   const [error, setError] = useState<Error | null>(null);

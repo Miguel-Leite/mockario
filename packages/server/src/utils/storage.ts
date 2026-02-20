@@ -10,7 +10,7 @@ interface StorageData {
   users?: User[];
 }
 
-const DEFAULT_DATA_DIR = path.join(os.homedir(), '.mockly');
+const DEFAULT_DATA_DIR = path.join(os.homedir(), '.mockario');
 const DEFAULT_FILE = 'data.json';
 
 export class Storage {

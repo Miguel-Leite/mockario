@@ -1,11 +1,11 @@
 {
-  "name": "mockly",
+  "name": "mockario",
   "version": "1.1.0",
   "description": "Mock APIs rapidinho - Server + UI for creating mock endpoints",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "mockly": "./dist/index.js"
+    "mockario": "./dist/index.js"
   },
   "exports": {
     ".": {
@@ -40,10 +40,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Miguel-Leite/mockly.git"
+    "url": "git+https://github.com/Miguel-Leite/mockario.git"
   },
   "bugs": {
-    "url": "https://github.com/Miguel-Leite/mockly/issues"
+    "url": "https://github.com/Miguel-Leite/mockario/issues"
   },
   "engines": {
     "node": ">=18.0.0"
