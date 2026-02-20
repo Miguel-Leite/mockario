@@ -7,7 +7,7 @@ import { EndpointForm } from './EndpointForm';
 
 interface EndpointCardProps {
   endpoint: MockEndpoint;
-  onDelete: (id: string) => void;
+  onDelete: (endpoint: MockEndpoint) => void;
   onUpdate: (id: string, dto: Partial<MockEndpoint>) => Promise<void>;
   onTest: (endpoint: MockEndpoint, response: object) => void;
   onTestError: (endpoint: MockEndpoint, error: string) => void;
@@ -102,7 +102,7 @@ export function EndpointCard({ endpoint, onDelete, onUpdate, onTest, onTestError
             variant="ghost"
             size="icon"
             className="h-8 w-8 hover:text-red-400"
-            onClick={() => onDelete(endpoint.id)}
+            onClick={() => onDelete(endpoint)}
             title="Delete endpoint"
           >
             <Trash2 className="h-4 w-4" />

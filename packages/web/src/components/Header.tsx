@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Server, FileText, Database, Settings } from 'lucide-react';
+import { Server, FileText, Database, Settings, Send } from 'lucide-react';
 
 interface HeaderProps {
   serverConnected?: boolean;
@@ -42,6 +42,17 @@ export function Header({ serverConnected = true }: HeaderProps) {
             >
               <Database className="h-4 w-4" />
               Schemas
+            </Link>
+            <Link
+              to="/http-client"
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors ${
+                isActive('/http-client')
+                  ? 'bg-neutral-800 text-neutral-100'
+                  : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/50'
+              }`}
+            >
+              <Send className="h-4 w-4" />
+              HTTP
             </Link>
             <Link
               to="/settings"

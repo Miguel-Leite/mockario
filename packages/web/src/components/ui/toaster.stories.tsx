@@ -19,7 +19,7 @@ export const Default: Story = {
     <div className="p-4 space-y-4">
       <Toaster />
       <div className="space-x-2">
-        <Button onClick={() => alert('Toast shown!')}>
+        <Button onClick={() => console.log('Toast shown!')}>
           Show Toast Example
         </Button>
       </div>

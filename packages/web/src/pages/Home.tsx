@@ -11,6 +11,16 @@ import { endpointsApi, logsApi } from '@/services/api';
 import { toastError, toastSuccess } from '@/lib/toast';
 import type { MockEndpoint, CreateEndpointDto, RequestLog } from '@/types';
 import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 export function Home() {
   const [endpoints, setEndpoints] = useState<MockEndpoint[]>([]);
@@ -20,6 +30,8 @@ export function Home() {
   const [selectedResponse, setSelectedResponse] = useState<{ endpoint: MockEndpoint; response: object } | null>(null);
   const [errorResponse, setErrorResponse] = useState<{ endpoint: MockEndpoint; error: string } | null>(null);
   const [serverConnected, setServerConnected] = useState(true);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [endpointToDelete, setEndpointToDelete] = useState<MockEndpoint | null>(null);
 
   const fetchEndpoints = useCallback(async () => {
     try {
@@ -78,11 +90,19 @@ export function Home() {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = (endpoint: MockEndpoint) => {
+    setEndpointToDelete(endpoint);
+    setDeleteOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!endpointToDelete) return;
     try {
-      await endpointsApi.delete(id);
-      setEndpoints((prev) => prev.filter((ep) => ep.id !== id));
+      await endpointsApi.delete(endpointToDelete.id);
+      setEndpoints((prev) => prev.filter((ep) => ep.id !== endpointToDelete.id));
       toastSuccess('Endpoint deleted', 'Endpoint removed successfully');
+      setDeleteOpen(false);
+      setEndpointToDelete(null);
     } catch (err) {
       console.error('Failed to delete endpoint:', err);
       toastError('Failed to delete endpoint', 'Please try again');
@@ -196,6 +216,23 @@ export function Home() {
             onClear={handleClearLogs}
           />
         )}
+
+        <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Endpoint</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete this endpoint? This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setEndpointToDelete(null)}>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleConfirmDelete} className="bg-red-600 hover:bg-red-700">
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </main>
       <Toaster />
     </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Shield, RefreshCw, Layers } from 'lucide-react';
+import { Plus, Shield, RefreshCw, Layers, FileJson } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -8,9 +8,10 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import type { CreateEndpointDto, HttpMethod, MockEndpoint, Schema } from '@/types';
+import type { CreateEndpointDto, HttpMethod, MockEndpoint, Schema, RequestBody, RequestBodySource } from '@/types';
 import { SchemaSelector } from './SchemaSelector';
 import { schemasApi } from '@/services/api';
+import { generateFromKeysWithTypes } from '@/lib/faker';
 
 interface EndpointFormProps {
   onSubmit: (dto: CreateEndpointDto) => void;
@@ -19,16 +20,7 @@ interface EndpointFormProps {
 }
 
 function generateFromKeys(keys: string[], isArray: boolean, count: number = 1): object | object[] {
-  const results: object[] = [];
-  
-  for (let i = 0; i < count; i++) {
-    const row: Record<string, any> = {};
-    for (const key of keys) {
-      row[key] = '';
-    }
-    results.push(row);
-  }
-  
+  const results = generateFromKeysWithTypes(keys, count);
   return isArray ? results : results[0];
 }
 
@@ -48,6 +40,12 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
   const [error, setError] = useState('');
   const [authRequired, setAuthRequired] = useState(false);
   const [useCustomKeys, setUseCustomKeys] = useState(false);
+  const [hasRequestBody, setHasRequestBody] = useState(false);
+  const [requestBodySource, setRequestBodySource] = useState<RequestBodySource>('keys');
+  const [requestBodySchemaId, setRequestBodySchemaId] = useState('');
+  const [requestBodyTableId, setRequestBodyTableId] = useState('');
+  const [requestBodyKeys, setRequestBodyKeys] = useState('');
+  const [requestBodyExample, setRequestBodyExample] = useState('');
 
   const isEditing = !!endpoint;
 
@@ -70,6 +68,22 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
       setIsArray(endpoint.storedData ? Array.isArray(endpoint.storedData) : false);
       setAuthRequired(endpoint.authRequired || false);
       setUseCustomKeys(!endpoint.schemaRef && !!endpoint.responseKeys);
+      
+      if (endpoint.requestBody) {
+        setHasRequestBody(true);
+        setRequestBodySource(endpoint.requestBody.source);
+        setRequestBodySchemaId(endpoint.requestBody.schemaRef?.schemaId || '');
+        setRequestBodyTableId(endpoint.requestBody.schemaRef?.tableId || '');
+        setRequestBodyKeys(endpoint.requestBody.keys?.join(', ') || '');
+        setRequestBodyExample(endpoint.requestBody.example ? JSON.stringify(endpoint.requestBody.example, null, 2) : '');
+      } else {
+        setHasRequestBody(false);
+        setRequestBodySource('keys');
+        setRequestBodySchemaId('');
+        setRequestBodyTableId('');
+        setRequestBodyKeys('');
+        setRequestBodyExample('');
+      }
     } else if (open) {
       setPath('');
       setMethod('GET');
@@ -82,6 +96,12 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
       setIsArray(false);
       setAuthRequired(false);
       setUseCustomKeys(false);
+      setHasRequestBody(false);
+      setRequestBodySource('keys');
+      setRequestBodySchemaId('');
+      setRequestBodyTableId('');
+      setRequestBodyKeys('');
+      setRequestBodyExample('');
     }
   }, [open, endpoint]);
 
@@ -156,6 +176,36 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
       authRequired,
     };
 
+    if (hasRequestBody && ['POST', 'PUT', 'PATCH'].includes(method)) {
+      let requestBody: RequestBody | undefined;
+      
+      if (requestBodySource === 'schema' && requestBodySchemaId && requestBodyTableId) {
+        requestBody = {
+          source: 'schema',
+          schemaRef: { schemaId: requestBodySchemaId, tableId: requestBodyTableId }
+        };
+      } else if (requestBodySource === 'keys' && requestBodyKeys.trim()) {
+        requestBody = {
+          source: 'keys',
+          keys: requestBodyKeys.split(',').map(k => k.trim()).filter(k => k.length > 0)
+        };
+      } else if (requestBodySource === 'example' && requestBodyExample.trim()) {
+        try {
+          requestBody = {
+            source: 'example',
+            example: JSON.parse(requestBodyExample)
+          };
+        } catch {
+          setError('Invalid JSON in request body example');
+          return;
+        }
+      }
+      
+      if (requestBody) {
+        dto.requestBody = requestBody;
+      }
+    }
+
     onSubmit(dto);
     if (!isEditing) {
       handleClose();
@@ -175,6 +225,12 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
     setError('');
     setAuthRequired(false);
     setUseCustomKeys(false);
+    setHasRequestBody(false);
+    setRequestBodySource('keys');
+    setRequestBodySchemaId('');
+    setRequestBodyTableId('');
+    setRequestBodyKeys('');
+    setRequestBodyExample('');
     setOpen(false);
   };
 
@@ -213,7 +269,7 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
         <div className="bg-neutral-900 rounded-lg border border-neutral-800 p-4 space-y-4">
           <div className="flex items-center justify-between">
             <label className="text-sm text-neutral-300 font-medium">Data Source</label>
-            {hasSchemas && !useCustomKeys && (
+            {!useCustomKeys && (
               <button
                 type="button"
                 onClick={handleToggleCustomMode}
@@ -253,12 +309,6 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
             </div>
           )}
 
-          {!useCustomKeys && !hasSchemas && (
-            <div className="text-sm text-neutral-500">
-              No schemas available. Create a schema first or use custom keys.
-            </div>
-          )}
-
           {useCustomKeys && (
             <div className="space-y-3">
               <div>
@@ -269,11 +319,11 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
                   type="text"
                   value={responseKeysInput}
                   onChange={(e) => handleCustomKeysChange(e.target.value)}
-                  placeholder="name, email, age"
+                  placeholder="name:string, email:email, age:number"
                   className="w-full h-9 rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 text-sm text-neutral-200 placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-600"
                 />
                 <p className="text-xs text-neutral-500 mt-1">
-                  Enter key names separated by commas. These will be used for both response and POST payload.
+                  Use format key:type (e.g., name:string, email:email, age:number). Known types: string, number, boolean, date, email, phone, uuid, url, address, city, country, avatar, company
                 </p>
               </div>
 
@@ -335,6 +385,84 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
             </div>
           )}
         </div>
+
+        {['POST', 'PUT', 'PATCH'].includes(method) && (
+          <div className="bg-neutral-900 rounded-lg border border-neutral-800 p-4 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <FileJson className="h-4 w-4 text-neutral-400" />
+                <span className="text-sm text-neutral-300 font-medium">Request Body</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setHasRequestBody(!hasRequestBody)}
+                className={`w-12 h-6 rounded-full transition-colors ${hasRequestBody ? 'bg-primary-600' : 'bg-neutral-700'}`}
+              >
+                <div className={`w-5 h-5 rounded-full bg-white transition-transform ${hasRequestBody ? 'translate-x-6' : 'translate-x-0.5'}`} />
+              </button>
+            </div>
+
+            {hasRequestBody && (
+              <div className="space-y-3">
+                <div className="flex gap-2">
+                  {(['keys', 'schema', 'example'] as const).map((source) => (
+                    <button
+                      key={source}
+                      type="button"
+                      onClick={() => setRequestBodySource(source)}
+                      className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
+                        requestBodySource === source
+                          ? 'bg-primary-600 text-white'
+                          : 'bg-neutral-800 text-neutral-400 hover:bg-neutral-700'
+                      }`}
+                    >
+                      {source === 'keys' ? 'Keys' : source === 'schema' ? 'Schema' : 'Example'}
+                    </button>
+                  ))}
+                </div>
+
+                {requestBodySource === 'schema' && (
+                  <div>
+                    <SchemaSelector
+                      onSelect={(sid, tid) => { setRequestBodySchemaId(sid); setRequestBodyTableId(tid); }}
+                      selectedSchemaId={requestBodySchemaId}
+                      selectedTableId={requestBodyTableId}
+                    />
+                  </div>
+                )}
+
+                {requestBodySource === 'keys' && (
+                  <div>
+                    <label className="text-xs text-neutral-400 mb-1.5 block">
+                      Body Keys (comma separated)
+                    </label>
+                    <input
+                      type="text"
+                      value={requestBodyKeys}
+                      onChange={(e) => setRequestBodyKeys(e.target.value)}
+                      placeholder="username:string, password:string"
+                      className="w-full h-9 rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 text-sm text-neutral-200 placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-600"
+                    />
+                  </div>
+                )}
+
+                {requestBodySource === 'example' && (
+                  <div>
+                    <label className="text-xs text-neutral-400 mb-1.5 block">
+                      JSON Example
+                    </label>
+                    <textarea
+                      value={requestBodyExample}
+                      onChange={(e) => setRequestBodyExample(e.target.value)}
+                      placeholder='{"name": "John", "email": "john@example.com"}'
+                      className="w-full h-24 rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 text-sm text-neutral-200 placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-600 font-mono resize-none"
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="flex items-center justify-between py-3 border-t border-neutral-800">
           <div className="flex items-center gap-2">

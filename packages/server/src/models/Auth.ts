@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { storage } from '../utils/storage';
 import type { AuthSettings, User, AuthType, MockEndpoint } from '../types';
+import { endpointModel } from './Endpoint';
 
 const DEFAULT_AUTH_SETTINGS: AuthSettings = {
   enabled: false,
@@ -12,23 +13,25 @@ const DEFAULT_AUTH_SETTINGS: AuthSettings = {
 
 const AUTH_ENDPOINTS: Omit<MockEndpoint, 'id' | 'createdAt'>[] = [
   {
-    path: '/auth/login',
+    path: '/_auth/login',
     method: 'POST',
     response: { message: 'Login endpoint', token: 'jwt-token' },
     responseType: 'json',
     delay: 0,
     authRequired: false,
+    requestBody: { source: 'keys', keys: ['username:string', 'password:string'] },
   },
   {
-    path: '/auth/register',
+    path: '/_auth/register',
     method: 'POST',
-    response: { message: 'Register endpoint' },
+    response: { message: 'Register endpoint', user: { id: '', username: '' } },
     responseType: 'json',
     delay: 0,
     authRequired: false,
+    requestBody: { source: 'keys', keys: ['username:string', 'password:string'] },
   },
   {
-    path: '/auth/me',
+    path: '/_auth/me',
     method: 'GET',
     response: { message: 'Current user info', user: { id: '', username: '' } },
     responseType: 'json',
@@ -43,22 +46,29 @@ export class AuthModel {
 
   constructor() {
     const storedSettings = storage.getAuthSettings();
+    console.log('[Auth] Stored settings:', JSON.stringify(storedSettings));
     this.settings = storedSettings || DEFAULT_AUTH_SETTINGS;
+    console.log('[Auth] Current settings:', JSON.stringify(this.settings));
     
     const storedUsers = storage.getUsers();
+    console.log('[Auth] Stored users:', storedUsers.length, storedUsers.map(u => u.username));
     this.users = new Map(storedUsers.map(u => [u.id, u]));
   }
 
   getSettings(): AuthSettings {
+    console.log('[Auth] getSettings called, returning:', JSON.stringify(this.settings));
     return this.settings;
   }
 
   updateSettings(settings: Partial<AuthSettings>): AuthSettings {
     const wasEnabled = this.settings.enabled;
+    console.log('[Auth] updateSettings called, wasEnabled:', wasEnabled, 'new settings:', JSON.stringify(settings));
     const newEnabled = settings.enabled !== undefined ? settings.enabled : this.settings.enabled;
     
     this.settings = { ...this.settings, ...settings };
+    console.log('[Auth] merged settings:', JSON.stringify(this.settings));
     storage.setAuthSettings(this.settings);
+    console.log('[Auth] settings saved to storage');
     
     if (!wasEnabled && newEnabled) {
       this.ensureAuthEndpoints();
@@ -83,6 +93,7 @@ export class AuthModel {
           createdAt: new Date().toISOString(),
         };
         storage.addEndpoint(newEndpoint);
+        endpointModel.addEndpoint(newEndpoint);
       }
     }
   }
@@ -90,11 +101,12 @@ export class AuthModel {
   private removeAuthEndpoints(): void {
     const endpoints = storage.getEndpoints();
     const authEndpointIds = endpoints
-      .filter(e => e.path.startsWith('/auth/') && ['login', 'register', 'me'].some(p => e.path.endsWith(p)))
+      .filter(e => e.path.startsWith('/_auth/') && ['login', 'register', 'me'].some(p => e.path.endsWith(p)))
       .map(e => e.id);
     
     for (const id of authEndpointIds) {
       storage.deleteEndpoint(id);
+      endpointModel.delete(id);
     }
   }
 
@@ -109,7 +121,7 @@ export class AuthModel {
   getAuthEndpoints(): MockEndpoint[] {
     const endpoints = storage.getEndpoints();
     return endpoints.filter(e => 
-      e.path.startsWith('/auth/') && ['login', 'register', 'me'].some(p => e.path.endsWith(p))
+      e.path.startsWith('/_auth/') && ['login', 'register', 'me'].some(p => e.path.endsWith(p))
     );
   }
 
@@ -152,12 +164,19 @@ export class AuthModel {
   }
 
   validateCredentials(username: string, password: string): User | null {
+    console.log('[Auth] validateCredentials called for:', username);
+    console.log('[Auth] users in memory:', Array.from(this.users.values()).map(u => u.username));
     const user = this.getUserByUsername(username);
     if (!user) {
+      console.log('[Auth] user not found');
       return null;
     }
 
-    if (this.verifyPassword(password, user.password)) {
+    console.log('[Auth] user found:', user.username, 'stored password hash:', user.password);
+    console.log('[Auth] input password:', password, 'hashed:', Buffer.from(password).toString('base64'));
+    const verified = this.verifyPassword(password, user.password);
+    console.log('[Auth] password verified:', verified);
+    if (verified) {
       return { ...user, password: '***' };
     }
     return null;

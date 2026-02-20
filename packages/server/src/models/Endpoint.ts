@@ -78,10 +78,16 @@ export class EndpointModel {
       storedData: dto.storedData,
       responseKeys: dto.responseKeys,
       authRequired: dto.authRequired,
+      requestBody: dto.requestBody,
       createdAt: new Date().toISOString(),
     };
     this.endpoints.set(id, endpoint);
     storage.addEndpoint(endpoint);
+    return endpoint;
+  }
+
+  addEndpoint(endpoint: MockEndpoint): MockEndpoint {
+    this.endpoints.set(endpoint.id, endpoint);
     return endpoint;
   }
 
@@ -114,6 +120,7 @@ export class EndpointModel {
       storedData: dto.storedData !== undefined ? dto.storedData : endpoint.storedData,
       responseKeys: dto.responseKeys !== undefined ? dto.responseKeys : endpoint.responseKeys,
       authRequired: dto.authRequired !== undefined ? dto.authRequired : endpoint.authRequired,
+      requestBody: dto.requestBody !== undefined ? dto.requestBody : endpoint.requestBody,
     };
     this.endpoints.set(id, updated);
     storage.updateEndpoint(id, updated);

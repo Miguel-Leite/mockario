@@ -6,6 +6,17 @@ import { toastError, toastSuccess } from '@/lib/toast';
 import { authApi, api } from '@/services/api';
 import type { AuthSettings, AuthType, User } from '@/types';
 import { Toaster } from '@/components/ui/toaster';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 export function Settings() {
   const [settings, setSettings] = useState<AuthSettings | null>(null);
@@ -16,6 +27,9 @@ export function Settings() {
   const [newUsername, setNewUsername] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [serverConnected, setServerConnected] = useState(true);
+  const [resetOpen, setResetOpen] = useState(false);
+  const [deleteUserOpen, setDeleteUserOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<{ id: string; username: string } | null>(null);
 
   useEffect(() => {
     fetchSettings();
@@ -47,7 +61,8 @@ export function Settings() {
     if (!settings) return;
     setSaving(true);
     try {
-      await authApi.updateSettings(settings);
+      const updated = await authApi.updateSettings(settings);
+      setSettings(updated);
       toastSuccess('Settings saved', 'Authentication settings updated');
     } catch (err) {
       toastError('Failed to save', 'Please try again');
@@ -57,9 +72,6 @@ export function Settings() {
   };
 
   const handleReset = async () => {
-    if (!confirm('Are you sure you want to reset all data? This will delete all endpoints, schemas, and authentication settings.')) {
-      return;
-    }
     try {
       await api.post('/reset');
       toastSuccess('Reset complete', 'All data has been cleared');
@@ -86,23 +98,25 @@ export function Settings() {
   const handleAddUser = async () => {
     if (!newUsername.trim() || !newPassword.trim()) return;
     try {
-      await authApi.createUser(newUsername.trim(), newPassword);
+      const { user } = await authApi.createUser(newUsername.trim(), newPassword);
       toastSuccess('User created', `User "${newUsername}" created`);
       setNewUsername('');
       setNewPassword('');
       setShowAddUser(false);
-      fetchSettings();
+      setUsers(prev => [...prev, user]);
     } catch (err: any) {
       toastError('Failed to create user', err.response?.data?.error || 'Please try again');
     }
   };
 
-  const handleDeleteUser = async (id: string, username: string) => {
-    if (!confirm(`Delete user "${username}"?`)) return;
+  const handleDeleteUser = async () => {
+    if (!userToDelete) return;
     try {
-      await authApi.deleteUser(id);
+      await authApi.deleteUser(userToDelete.id);
+      setUsers(prev => prev.filter(u => u.id !== userToDelete.id));
       toastSuccess('User deleted', 'User removed successfully');
-      fetchSettings();
+      setDeleteUserOpen(false);
+      setUserToDelete(null);
     } catch (err) {
       toastError('Failed to delete user', 'Please try again');
     }
@@ -279,7 +293,7 @@ export function Settings() {
                           variant="ghost"
                           size="icon"
                           className="text-neutral-500 hover:text-red-400"
-                          onClick={() => handleDeleteUser(user.id, user.username)}
+                          onClick={() => { setUserToDelete({ id: user.id, username: user.username }); setDeleteUserOpen(true); }}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -292,14 +306,28 @@ export function Settings() {
           )}
 
           <div className="flex justify-between">
-            <Button
-              variant="outline"
-              onClick={handleReset}
-              className="text-red-400 border-red-900 hover:bg-red-900/20"
-            >
-              <RotateCcw className="h-4 w-4 mr-2" />
-              Reset All
-            </Button>
+            <AlertDialog open={resetOpen} onOpenChange={setResetOpen}>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" className="text-red-400 border-red-900 hover:bg-red-900/20">
+                  <RotateCcw className="h-4 w-4 mr-2" />
+                  Reset All
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Reset All Data</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to reset all data? This will delete all endpoints, schemas, and authentication settings.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleReset} className="bg-red-600 hover:bg-red-700">
+                    Reset
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
             <Button onClick={handleSave} disabled={saving}>
               {saving ? 'Saving...' : 'Save Settings'}
             </Button>
@@ -342,6 +370,23 @@ export function Settings() {
             </div>
           </div>
         )}
+
+        <AlertDialog open={deleteUserOpen} onOpenChange={setDeleteUserOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete User</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete user "{userToDelete?.username}"? This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setUserToDelete(null)}>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDeleteUser} className="bg-red-600 hover:bg-red-700">
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         <Toaster />
       </main>

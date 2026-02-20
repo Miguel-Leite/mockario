@@ -96,8 +96,9 @@ export const schemasApi = {
     await api.delete(`/schemas/${schemaId}/tables/${tableId}`);
   },
 
-  updateTablePosition: async (schemaId: string, tableId: string, position: TablePosition): Promise<void> => {
-    await api.put(`/schemas/${schemaId}/tables/${tableId}/position`, position);
+  updateTablePosition: async (schemaId: string, tableId: string, position: TablePosition): Promise<SchemaTable> => {
+    const response = await api.put<SchemaTable>(`/schemas/${schemaId}/tables/${tableId}/position`, position);
+    return response.data;
   },
 
   addField: async (schemaId: string, tableId: string, field: Omit<SchemaField, 'id'>): Promise<SchemaField> => {
@@ -105,8 +106,8 @@ export const schemasApi = {
     return response.data;
   },
 
-  updateField: async (schemaId: string, tableId: string, fieldId: string, data: Partial<SchemaField>): Promise<SchemaField> => {
-    const response = await api.put<SchemaField>(`/schemas/${schemaId}/tables/${tableId}/fields/${fieldId}`, data);
+  updateField: async (schemaId: string, tableId: string, fieldId: string, updates: Partial<SchemaField>): Promise<SchemaField> => {
+    const response = await api.put<SchemaField>(`/schemas/${schemaId}/tables/${tableId}/fields/${fieldId}`, updates);
     return response.data;
   },
 
@@ -123,7 +124,12 @@ export const schemasApi = {
     await api.delete(`/schemas/${schemaId}/relations/${relationId}`);
   },
 
-  generateFromTable: async (schemaId: string, tableId: string, count?: number): Promise<object[]> => {
+  generate: async (schemaId: string, tableId: string, count?: number): Promise<object[]> => {
+    const response = await api.post<object[]>(`/schemas/${schemaId}/generate`, { tableId, count });
+    return response.data;
+  },
+
+  generateFromTable: async (schemaId: string, tableId: string, count: number = 1): Promise<object[]> => {
     const response = await api.post<object[]>(`/schemas/${schemaId}/generate`, { tableId, count });
     return response.data;
   },
@@ -155,11 +161,6 @@ export const authApi = {
     return response.data;
   },
 
-  getUsers: async (): Promise<User[]> => {
-    const response = await api.get<User[]>('/auth/users');
-    return response.data;
-  },
-
   createUser: async (username: string, password: string): Promise<{ user: User }> => {
     const response = await api.post<{ user: User }>('/auth/users', { username, password });
     return response.data;
@@ -168,4 +169,46 @@ export const authApi = {
   deleteUser: async (id: string): Promise<void> => {
     await api.delete(`/auth/users/${id}`);
   },
+};
+
+export const httpClientRequest = async (config: {
+  method: string;
+  url: string;
+  headers?: Record<string, string>;
+  body?: object;
+}) => {
+  const startTime = performance.now();
+  
+  const response = await fetch(config.url, {
+    method: config.method,
+    headers: {
+      'Content-Type': 'application/json',
+      ...config.headers,
+    },
+    body: config.body ? JSON.stringify(config.body) : undefined,
+  });
+  
+  const endTime = performance.now();
+  const duration = Math.round(endTime - startTime);
+  
+  let data;
+  const contentType = response.headers.get('content-type');
+  if (contentType && contentType.includes('application/json')) {
+    data = await response.json();
+  } else {
+    data = await response.text();
+  }
+  
+  const responseHeaders: Record<string, string> = {};
+  response.headers.forEach((value, key) => {
+    responseHeaders[key] = value;
+  });
+  
+  return {
+    status: response.status,
+    statusText: response.statusText,
+    headers: responseHeaders,
+    data,
+    duration,
+  };
 };

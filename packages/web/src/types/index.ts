@@ -50,6 +50,15 @@ export interface SchemaRef {
 
 export type ResponseType = 'json' | 'ts';
 
+export type RequestBodySource = 'schema' | 'keys' | 'example';
+
+export interface RequestBody {
+  source: RequestBodySource;
+  schemaRef?: SchemaRef;
+  keys?: string[];
+  example?: object;
+}
+
 export interface MockEndpoint {
   id: string;
   path: string;
@@ -61,6 +70,7 @@ export interface MockEndpoint {
   storedData?: object[];
   responseKeys?: string[];
   authRequired?: boolean;
+  requestBody?: RequestBody;
   createdAt: string;
 }
 
@@ -74,6 +84,7 @@ export interface CreateEndpointDto {
   storedData?: object[];
   responseKeys?: string[];
   authRequired?: boolean;
+  requestBody?: RequestBody;
 }
 
 export type AuthType = 'jwt' | 'basic' | 'apiKey' | 'bearer';
