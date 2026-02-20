@@ -33,7 +33,7 @@ npx mockly start
 ```
 
 This opens:
-- **Web UI**: http://localhost:5173 (endpoint management)
+- **Web UI**: http://localhost:3001 (endpoint management)
 - **API Server**: http://localhost:3001 (your mock endpoints)
 
 ---
@@ -92,7 +92,7 @@ For complete documentation, see [ADVANCED.md](./ADVANCED.md).
 | `npx mockly start -w 3000` | Custom web port |
 | `npx mockly server` | Server only (port 3001) |
 | `npx mockly server -p 4000` | Custom server port |
-| `npx mockly web` | Web UI only (port 5173) |
+| `npx mockly web` | Web UI only (port 3001) |
 
 ---
 
