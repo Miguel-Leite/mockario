@@ -1,12 +1,16 @@
 # Mockario
 
+<img src="./mockario.jpg" alt="Mockario - Mock APIs quickly, develop without waiting for the backend" width="100%" />
+
+---
+
 [![npm version](https://img.shields.io/npm/v/mockario)](https://www.npmjs.com/package/mockario)
 [![Build](https://img.shields.io/github/actions/workflow/status/Miguel-Leite/mockario/ci.yml)](https://github.com/Miguel-Leite/mockario/actions)
 [![Tests](https://img.shields.io/badge/tests-56%20passed-brightgreen)](https://github.com/Miguel-Leite/mockario)
 [![License](https://img.shields.io/npm/l/mockario)](LICENSE)
 [![Node.js](https://img.shields.io/node/v/mockario)](https://nodejs.org)
 
-Mock APIs rapidinho, desenvolva sem esperar o backend
+Mock APIs quickly, develop without waiting for the backend
 
 ⚠️ **Mockario is for development only. Not for production.**
 
