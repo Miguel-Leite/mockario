@@ -18,7 +18,11 @@ Mock APIs quickly, develop without waiting for the backend
 
 ## What is Mockario?
 
-Mockario is a powerful tool for creating mock APIs locally, enabling frontend developers to work independently without waiting for the backend to be ready. Create endpoints, generate fake data, test authentication, and more - all from a beautiful visual interface.
+Mockario is a local mock API environment that helps developers build and test applications without relying on a real backend.
+
+It provides a complete setup with a mock server, a visual management interface, and automatic data generation, allowing frontend and mobile developers to work faster and independently.
+
+With Mockario, you can create REST endpoints, define custom responses, simulate network delays, manage authentication, and generate realistic fake data all running locally with zero configuration.
 
 ---
 
