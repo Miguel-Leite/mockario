@@ -1,5 +1,5 @@
 {
-  "name": "@mockario/hooks",
+  "name": "mockario-react-hooks",
   "version": "1.0.0",
   "description": "React hooks for Mockario - Consume Mockario APIs from your React applications",
   "main": "./dist/index.js",

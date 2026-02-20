@@ -4,6 +4,8 @@ import { processFakerTemplate, processObject, generateFakerValue, availableFaker
 import { logger } from './utils/logger';
 import * as types from './types';
 
+export * from './hooks';
+
 const isMain = require.main === module || process.argv[1]?.includes('index.js') || process.argv[1]?.includes('index.ts');
 
 if (isMain) {
@@ -12,6 +14,7 @@ if (isMain) {
   startMockServer({ port });
 }
 
+export * from './hooks';
 export { MockServer, startMockServer, createMockServer };
 export { endpointModel };
 export { processFakerTemplate, processObject, generateFakerValue, availableFakerMethods };

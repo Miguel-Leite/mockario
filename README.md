@@ -74,7 +74,33 @@ Built-in Postman-like HTTP client to test your endpoints. Supports authenticatio
 Protect endpoints with JWT, Basic Auth, or API Key. Auto-generates /auth/login, /auth/register, and /auth/me endpoints.
 
 ### React Hooks
-Use `@mockly/hooks` package to consume Mockario APIs in your React applications.
+Use the built-in hooks from `mockario` package to consume Mockario APIs in your React applications.
+
+```tsx
+import { MockarioProvider, useMockEndpoints } from 'mockario';
+
+function App() {
+  return (
+    <MockarioProvider>
+      <UsersList />
+    </MockarioProvider>
+  );
+}
+
+function UsersList() {
+  const { endpoints, isLoading } = useMockEndpoints('http://localhost:3001');
+  
+  if (isLoading) return <div>Loading...</div>;
+  
+  return (
+    <ul>
+      {endpoints.map(endpoint => (
+        <li key={endpoint.id}>{endpoint.method} {endpoint.path}</li>
+      ))}
+    </ul>
+  );
+}
+```
 
 ---
 
@@ -189,9 +215,9 @@ npm run storybook
 
 | Package | Description |
 |---------|-------------|
-| `mockly` | Core server package |
-| `@mockly/hooks` | React hooks for consuming APIs |
-| `@mockly/cli` | CLI tool |
+| `mockario` | Core server + Web UI + React Hooks (all in one) |
+
+All functionality (server, web interface, and React hooks) is included in the `mockario` package.
 
 ---
 
