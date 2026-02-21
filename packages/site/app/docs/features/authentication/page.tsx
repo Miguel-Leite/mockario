@@ -1,6 +1,8 @@
+import { CodeBlock, Callout } from "@/components/docs";
+
 export default function AuthenticationPage() {
   return (
-    <div className="prose prose-neutral dark:prose-invert max-w-none">
+    <>
       <h1>Authentication</h1>
       <p className="text-lg text-muted-foreground">
         Adicione autenticação aos seus endpoints mock.
@@ -12,20 +14,17 @@ export default function AuthenticationPage() {
       </p>
 
       <h3>JWT (JSON Web Token)</h3>
-      <pre className="bg-neutral-900 text-neutral-100 p-4 rounded-lg overflow-x-auto">
-        <code>{`{
+      <CodeBlock code={`{
   "path": "/api/protected",
   "method": "GET",
   "auth": {
     "type": "jwt",
     "secret": "your-secret-key"
   }
-}`}</code>
-      </pre>
+}`} language="json" />
 
       <h3>API Key</h3>
-      <pre className="bg-neutral-900 text-neutral-100 p-4 rounded-lg overflow-x-auto">
-        <code>{`{
+      <CodeBlock code={`{
   "path": "/api/protected",
   "method": "GET",
   "auth": {
@@ -33,12 +32,10 @@ export default function AuthenticationPage() {
     "header": "X-API-Key",
     "key": "your-api-key"
   }
-}`}</code>
-      </pre>
+}`} language="json" />
 
       <h3>Basic Auth</h3>
-      <pre className="bg-neutral-900 text-neutral-100 p-4 rounded-lg overflow-x-auto">
-        <code>{`{
+      <CodeBlock code={`{
   "path": "/api/protected",
   "method": "GET",
   "auth": {
@@ -46,20 +43,17 @@ export default function AuthenticationPage() {
     "username": "admin",
     "password": "password"
   }
-}`}</code>
-      </pre>
+}`} language="json" />
 
       <h3>Bearer Token</h3>
-      <pre className="bg-neutral-900 text-neutral-100 p-4 rounded-lg overflow-x-auto">
-        <code>{`{
+      <CodeBlock code={`{
   "path": "/api/protected",
   "method": "GET",
   "auth": {
     "type": "bearer",
     "token": "your-bearer-token"
   }
-}`}</code>
-      </pre>
+}`} language="json" />
 
       <h2>Rotas de Auth Automáticas</h2>
       <p>
@@ -76,6 +70,10 @@ export default function AuthenticationPage() {
         Você pode criar e gerenciar usuários através da interface web 
         ou da API.
       </p>
-    </div>
+
+      <Callout type="warning" title="Segurança">
+        Estes são endpoints mock. Não use em produção! As senhas e tokens são armazenados de forma simplificada.
+      </Callout>
+    </>
   );
 }

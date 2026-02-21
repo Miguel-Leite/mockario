@@ -1,6 +1,8 @@
+import { Callout } from "@/components/docs";
+
 export default function GettingStartedPage() {
   return (
-    <div className="prose prose-neutral dark:prose-invert max-w-none">
+    <>
       <h1>Getting Started</h1>
       <p className="text-lg text-muted-foreground">
         Aprenda os conceitos básicos do Mockario e comece a usar em minutos.
@@ -11,6 +13,10 @@ export default function GettingStartedPage() {
         Mockario é uma ferramenta para gerar APIs simuladas localmente, permitindo que 
         desenvolvedores de front-end trabalhem sem depender do backend.
       </p>
+
+      <Callout type="tip" title="Slogan">
+        &ldquo;Mock APIs rapidinho, desenvolva sem esperar o backend&rdquo;
+      </Callout>
 
       <h2>Principais Funcionalidades</h2>
       <ul>
@@ -26,11 +32,11 @@ export default function GettingStartedPage() {
       <h2>Próximos Passos</h2>
       <p>
         Pronto para começar? Vá para a página de{" "}
-        <a href="/docs/installation" className="text-green-600 hover:underline">
+        <a href="/docs/installation">
           Installation
         </a>{" "}
         para aprender como instalar e configurar.
       </p>
-    </div>
+    </>
   );
 }

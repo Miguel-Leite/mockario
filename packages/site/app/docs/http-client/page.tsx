@@ -1,6 +1,8 @@
+import { Callout } from "@/components/docs";
+
 export default function HttpClientPage() {
   return (
-    <div className="prose prose-neutral dark:prose-invert max-w-none">
+    <>
       <h1>HTTP Client</h1>
       <p className="text-lg text-muted-foreground">
         Teste seus endpoints diretamente na interface web.
@@ -15,12 +17,12 @@ export default function HttpClientPage() {
 
       <h2>Como Usar</h2>
       <ol>
-        <li>Acesse a seção "HTTP Client" na interface web</li>
+        <li>Acesse a seção &ldquo;HTTP Client&rdquo; na interface web</li>
         <li>Selecione o método HTTP (GET, POST, PUT, DELETE)</li>
         <li>Digite a URL do endpoint</li>
         <li>Adicione headers se necessário</li>
         <li>Adicione body para POST/PUT/PATCH</li>
-        <li>Clique em "Send"</li>
+        <li>Clique em &ldquo;Send&rdquo;</li>
         <li>Veja a resposta</li>
       </ol>
 
@@ -50,6 +52,10 @@ export default function HttpClientPage() {
         Suas requisições são salvas no histórico para que você 
         possa revisitar e executar novamente.
       </p>
-    </div>
+
+      <Callout type="tip">
+        Use o histórico para rapidamente repetir requisições durante o desenvolvimento.
+      </Callout>
+    </>
   );
 }

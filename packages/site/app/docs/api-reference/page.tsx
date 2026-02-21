@@ -1,20 +1,20 @@
+import { CodeBlock } from "@/components/docs";
+
 export default function APIReferencePage() {
   return (
-    <div className="prose prose-neutral dark:prose-invert max-w-none">
+    <>
       <h1>API Reference</h1>
       <p className="text-lg text-muted-foreground">
         Referência completa da API REST do Mockario.
       </p>
 
       <h2>Base URL</h2>
-      <pre className="bg-neutral-900 text-neutral-100 p-4 rounded-lg overflow-x-auto">
-        <code>http://localhost:3001/api</code>
-      </pre>
+      <CodeBlock code="http://localhost:3001/api" language="bash" />
 
       <h2>Endpoints</h2>
 
       <h3>Mock Endpoints</h3>
-      <table className="w-full border-collapse">
+      <table className="w-full border-collapse my-4">
         <thead>
           <tr className="border-b border-border">
             <th className="text-left py-2">Método</th>
@@ -47,7 +47,7 @@ export default function APIReferencePage() {
       </table>
 
       <h3>Schemas</h3>
-      <table className="w-full border-collapse">
+      <table className="w-full border-collapse my-4">
         <thead>
           <tr className="border-b border-border">
             <th className="text-left py-2">Método</th>
@@ -75,7 +75,7 @@ export default function APIReferencePage() {
       </table>
 
       <h3>Logs</h3>
-      <table className="w-full border-collapse">
+      <table className="w-full border-collapse my-4">
         <thead>
           <tr className="border-b border-border">
             <th className="text-left py-2">Método</th>
@@ -98,7 +98,7 @@ export default function APIReferencePage() {
       </table>
 
       <h3>Usuários (Auth)</h3>
-      <table className="w-full border-collapse">
+      <table className="w-full border-collapse my-4">
         <thead>
           <tr className="border-b border-border">
             <th className="text-left py-2">Método</th>
@@ -134,6 +134,6 @@ export default function APIReferencePage() {
         <li><strong>404</strong> - Not Found</li>
         <li><strong>500</strong> - Internal Server Error</li>
       </ul>
-    </div>
+    </>
   );
 }

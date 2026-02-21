@@ -1,6 +1,8 @@
+import { CodeBlock, Callout } from "@/components/docs";
+
 export default function SchemasPage() {
   return (
-    <div className="prose prose-neutral dark:prose-invert max-w-none">
+    <>
       <h1>Schemas</h1>
       <p className="text-lg text-muted-foreground">
         Crie schemas e gere dados fake automaticamente.
@@ -14,8 +16,8 @@ export default function SchemasPage() {
 
       <h2>Criar um Schema</h2>
       <ol>
-        <li>Acesse a seção "Schemas" na interface web</li>
-        <li>Clique em "New Schema"</li>
+        <li>Acesse a seção &ldquo;Schemas&rdquo; na interface web</li>
+        <li>Clique em &ldquo;New Schema&rdquo;</li>
         <li>Defina o nome e os campos</li>
         <li>Salve o schema</li>
       </ol>
@@ -25,8 +27,7 @@ export default function SchemasPage() {
         Você pode usar diversos tipos de dados Faker:
       </p>
 
-      <pre className="bg-neutral-900 text-neutral-100 p-4 rounded-lg overflow-x-auto">
-        <code>{`{
+      <CodeBlock code={`{
   "name": "person.fullName",
   "email": "internet.email",
   "age": "number.int",
@@ -34,17 +35,14 @@ export default function SchemasPage() {
   "phone": "phone.number",
   "avatar": "image.avatar",
   "createdAt": "date.past"
-}`}</code>
-      </pre>
+}`} language="json" />
 
       <h2>Gerar Dados</h2>
       <p>
         Após criar um schema, você pode gerar dados fake:
       </p>
 
-      <pre className="bg-neutral-900 text-neutral-100 p-4 rounded-lg overflow-x-auto">
-        <code>GET /api/schema/users?count=10</code>
-      </pre>
+      <CodeBlock code="GET /api/schema/users?count=10" language="bash" />
 
       <h2>Relacionamentos</h2>
       <p>
@@ -55,6 +53,10 @@ export default function SchemasPage() {
         <li>One-to-Many</li>
         <li>Many-to-Many</li>
       </ul>
-    </div>
+
+      <Callout type="tip">
+        Os relacionamentos permitem criar dados realistas com associações entre entidades.
+      </Callout>
+    </>
   );
 }
