@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Check, Copy } from "lucide-react";
+import { useTranslation } from "@/lib/i18n";
 
 const codeExample = [
   { type: "punct", content: "{" },
@@ -52,6 +53,7 @@ const colorMap: Record<string, string> = {
 };
 
 export function CodeExample() {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
 
   const codeString = `{
@@ -93,10 +95,10 @@ export function CodeExample() {
         >
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold tracking-tight md:text-4xl dark:text-white text-neutral-900">
-              Dados mock realistas
+              {t.home.realisticData}
             </h2>
             <p className="mt-4 dark:text-neutral-400 text-neutral-600">
-              Gere dados falsos automaticamente com Faker
+              {t.home.realisticDataSubtitle}
             </p>
           </div>
 
@@ -114,12 +116,12 @@ export function CodeExample() {
                 {copied ? (
                   <>
                     <Check className="h-3 w-3 md:h-4 md:w-4" />
-                    <span className="hidden sm:inline">Copied!</span>
+                    <span className="hidden sm:inline">{t.common.copied}</span>
                   </>
                 ) : (
                   <>
                     <Copy className="h-3 w-3 md:h-4 md:w-4" />
-                    <span className="hidden sm:inline">Copy</span>
+                    <span className="hidden sm:inline">{t.common.copy}</span>
                   </>
                 )}
               </button>

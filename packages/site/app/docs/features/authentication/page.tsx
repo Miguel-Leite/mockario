@@ -1,19 +1,24 @@
+"use client";
+
 import { CodeBlock, Callout } from "@/components/docs";
+import { useTranslation } from "@/lib/i18n";
 
 export default function AuthenticationPage() {
+  const { t } = useTranslation();
+
   return (
     <>
-      <h1>Authentication</h1>
+      <h1>{t.docs.authentication.title}</h1>
       <p className="text-lg text-muted-foreground">
-        Adicione autenticação aos seus endpoints mock.
+        {t.docs.authentication.description}
       </p>
 
-      <h2>Tipos de Autenticação</h2>
+      <h2>{t.docs.authentication.authTypes}</h2>
       <p>
-        O Mockario suporta diversos tipos de autenticação:
+        {t.docs.authentication.mockarioSupports}
       </p>
 
-      <h3>JWT (JSON Web Token)</h3>
+      <h3>{t.docs.authentication.jwt}</h3>
       <CodeBlock code={`{
   "path": "/api/protected",
   "method": "GET",
@@ -23,7 +28,7 @@ export default function AuthenticationPage() {
   }
 }`} language="json" />
 
-      <h3>API Key</h3>
+      <h3>{t.docs.authentication.apiKey}</h3>
       <CodeBlock code={`{
   "path": "/api/protected",
   "method": "GET",
@@ -34,7 +39,7 @@ export default function AuthenticationPage() {
   }
 }`} language="json" />
 
-      <h3>Basic Auth</h3>
+      <h3>{t.docs.authentication.basicAuth}</h3>
       <CodeBlock code={`{
   "path": "/api/protected",
   "method": "GET",
@@ -45,7 +50,7 @@ export default function AuthenticationPage() {
   }
 }`} language="json" />
 
-      <h3>Bearer Token</h3>
+      <h3>{t.docs.authentication.bearerToken}</h3>
       <CodeBlock code={`{
   "path": "/api/protected",
   "method": "GET",
@@ -55,24 +60,23 @@ export default function AuthenticationPage() {
   }
 }`} language="json" />
 
-      <h2>Rotas de Auth Automáticas</h2>
+      <h2>{t.docs.authentication.automaticAuthRoutes}</h2>
       <p>
-        O Mockario cria automaticamente rotas de autenticação:
+        {t.docs.authentication.autoRoutes}
       </p>
       <ul>
-        <li><code>POST /api/auth/register</code> - Criar usuário</li>
-        <li><code>POST /api/auth/login</code> - Fazer login</li>
-        <li><code>GET /api/auth/me</code> - Obter usuário atual</li>
+        <li><code>POST /api/auth/register</code> - {t.docs.authentication.register.replace("POST /api/auth/register - ", "")}</li>
+        <li><code>POST /api/auth/login</code> - {t.docs.authentication.login.replace("POST /api/auth/login - ", "")}</li>
+        <li><code>GET /api/auth/me</code> - {t.docs.authentication.getMe.replace("GET /api/auth/me - ", "")}</li>
       </ul>
 
-      <h2>Gerenciar Usuários</h2>
+      <h2>{t.docs.authentication.manageUsers}</h2>
       <p>
-        Você pode criar e gerenciar usuários através da interface web 
-        ou da API.
+        {t.docs.authentication.manageUsersDesc}
       </p>
 
-      <Callout type="warning" title="Segurança">
-        Estes são endpoints mock. Não use em produção! As senhas e tokens são armazenados de forma simplificada.
+      <Callout type="warning" title={t.docs.authentication.securityWarning}>
+        {t.docs.authentication.securityNote}
       </Callout>
     </>
   );

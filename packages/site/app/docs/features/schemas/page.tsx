@@ -1,30 +1,34 @@
+"use client";
+
 import { CodeBlock, Callout } from "@/components/docs";
+import { useTranslation } from "@/lib/i18n";
 
 export default function SchemasPage() {
+  const { t } = useTranslation();
+
   return (
     <>
-      <h1>Schemas</h1>
+      <h1>{t.docs.schemas.title}</h1>
       <p className="text-lg text-muted-foreground">
-        Crie schemas e gere dados fake automaticamente.
+        {t.docs.schemas.description}
       </p>
 
-      <h2>O que são Schemas?</h2>
+      <h2>{t.docs.schemas.whatAreSchemas}</h2>
       <p>
-        Schemas são definições de estrutura de dados que permitem gerar 
-        dados fake automaticamente usando Faker.
+        {t.docs.schemas.schemasDefinition}
       </p>
 
-      <h2>Criar um Schema</h2>
+      <h2>{t.docs.schemas.createSchema}</h2>
       <ol>
-        <li>Acesse a seção &ldquo;Schemas&rdquo; na interface web</li>
-        <li>Clique em &ldquo;New Schema&rdquo;</li>
-        <li>Defina o nome e os campos</li>
-        <li>Salve o schema</li>
+        <li>{t.docs.schemas.accessSection}</li>
+        <li>{t.docs.schemas.clickNewSchema}</li>
+        <li>{t.docs.schemas.defineFields}</li>
+        <li>{t.docs.schemas.saveSchema}</li>
       </ol>
 
-      <h2>Campos Faker</h2>
+      <h2>{t.docs.schemas.fakerFields}</h2>
       <p>
-        Você pode usar diversos tipos de dados Faker:
+        {t.docs.schemas.fakerTypes}
       </p>
 
       <CodeBlock code={`{
@@ -37,25 +41,25 @@ export default function SchemasPage() {
   "createdAt": "date.past"
 }`} language="json" />
 
-      <h2>Gerar Dados</h2>
+      <h2>{t.docs.schemas.generateData}</h2>
       <p>
-        Após criar um schema, você pode gerar dados fake:
+        {t.docs.schemas.afterCreateSchema}
       </p>
 
       <CodeBlock code="GET /api/schema/users?count=10" language="bash" />
 
-      <h2>Relacionamentos</h2>
+      <h2>{t.docs.schemas.relationships}</h2>
       <p>
-        Você pode criar relacionamentos entre schemas:
+        {t.docs.schemas.createRelationships}
       </p>
       <ul>
-        <li>One-to-One</li>
-        <li>One-to-Many</li>
-        <li>Many-to-Many</li>
+        <li>{t.docs.schemas.oneToOne}</li>
+        <li>{t.docs.schemas.oneToMany}</li>
+        <li>{t.docs.schemas.manyToMany}</li>
       </ul>
 
       <Callout type="tip">
-        Os relacionamentos permitem criar dados realistas com associações entre entidades.
+        {t.docs.schemas.relationshipsTip}
       </Callout>
     </>
   );

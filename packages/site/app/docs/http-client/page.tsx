@@ -1,60 +1,61 @@
+"use client";
+
 import { Callout } from "@/components/docs";
+import { useTranslation } from "@/lib/i18n";
 
 export default function HttpClientPage() {
+  const { t } = useTranslation();
+
   return (
     <>
-      <h1>HTTP Client</h1>
+      <h1>{t.docs.httpClient.title}</h1>
       <p className="text-lg text-muted-foreground">
-        Teste seus endpoints diretamente na interface web.
+        {t.docs.httpClient.description}
       </p>
 
-      <h2>O que é o HTTP Client?</h2>
+      <h2>{t.docs.httpClient.whatIsHttpClient}</h2>
       <p>
-        O HTTP Client integrado permite testar seus endpoints mock 
-        sem sair da interface do Mockario. É como um Postman/Insomnia 
-        integrado.
+        {t.docs.httpClient.httpClientDesc}
       </p>
 
-      <h2>Como Usar</h2>
+      <h2>{t.docs.httpClient.howToUse}</h2>
       <ol>
-        <li>Acesse a seção &ldquo;HTTP Client&rdquo; na interface web</li>
-        <li>Selecione o método HTTP (GET, POST, PUT, DELETE)</li>
-        <li>Digite a URL do endpoint</li>
-        <li>Adicione headers se necessário</li>
-        <li>Adicione body para POST/PUT/PATCH</li>
-        <li>Clique em &ldquo;Send&rdquo;</li>
-        <li>Veja a resposta</li>
+        <li>{t.docs.httpClient.howToUse}</li>
+        <li>{t.docs.httpClient.selectHttpMethod}</li>
+        <li>{t.docs.httpClient.enterUrl}</li>
+        <li>{t.docs.httpClient.addHeaders}</li>
+        <li>{t.docs.httpClient.addBody}</li>
+        <li>{t.docs.httpClient.clickSend}</li>
+        <li>{t.docs.httpClient.viewResponse}</li>
       </ol>
 
-      <h2>Selecionar Endpoint</h2>
+      <h2>{t.docs.httpClient.selectEndpoint}</h2>
       <p>
-        Você pode selecionar um endpoint da lista para preencher 
-        automaticamente URL, método e headers:
+        {t.docs.httpClient.selectEndpointDesc}
       </p>
       <ul>
-        <li>Clique no seletor de endpoints</li>
-        <li>Escolha o endpoint desejado</li>
-        <li>Os campos serão preenchidos automaticamente</li>
+        <li>{t.docs.httpClient.clickSelector}</li>
+        <li>{t.docs.httpClient.chooseEndpoint}</li>
+        <li>{t.docs.httpClient.fieldsAutoFill}</li>
       </ul>
 
-      <h2>Autenticação</h2>
+      <h2>{t.docs.httpClient.auth}</h2>
       <p>
-        O HTTP Client suporta os seguintes tipos de autenticação:
+        {t.docs.httpClient.authSupport}
       </p>
       <ul>
-        <li><strong>Bearer Token</strong> - Para JWT</li>
-        <li><strong>Basic Auth</strong> - Username e password</li>
-        <li><strong>API Key</strong> - Chave de API no header</li>
+        <li><strong>{t.docs.httpClient.bearerToken}</strong></li>
+        <li><strong>{t.docs.httpClient.basicAuth}</strong></li>
+        <li><strong>{t.docs.httpClient.apiKey}</strong></li>
       </ul>
 
-      <h2>Histórico</h2>
+      <h2>{t.docs.httpClient.history}</h2>
       <p>
-        Suas requisições são salvas no histórico para que você 
-        possa revisitar e executar novamente.
+        {t.docs.httpClient.historyDesc}
       </p>
 
       <Callout type="tip">
-        Use o histórico para rapidamente repetir requisições durante o desenvolvimento.
+        {t.docs.httpClient.historyTip}
       </Callout>
     </>
   );

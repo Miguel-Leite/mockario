@@ -1,41 +1,45 @@
+"use client";
+
 import { Callout } from "@/components/docs";
+import { useTranslation } from "@/lib/i18n";
 
 export default function GettingStartedPage() {
+  const { t } = useTranslation();
+
   return (
     <>
-      <h1>Getting Started</h1>
+      <h1>{t.docs.gettingStarted.title}</h1>
       <p className="text-lg text-muted-foreground">
-        Aprenda os conceitos básicos do Mockario e comece a usar em minutos.
+        {t.docs.gettingStarted.description}
       </p>
 
-      <h2>O que é o Mockario?</h2>
+      <h2>{t.docs.gettingStarted.whatIs}</h2>
       <p>
-        Mockario é uma ferramenta para gerar APIs simuladas localmente, permitindo que 
-        desenvolvedores de front-end trabalhem sem depender do backend.
+        {t.docs.gettingStarted.whatIsDescription}
       </p>
 
-      <Callout type="tip" title="Slogan">
-        &ldquo;Mock APIs rapidinho, desenvolva sem esperar o backend&rdquo;
+      <Callout type="tip" title={t.callout.slogan}>
+        &ldquo;{t.home.sloganText}&rdquo;
       </Callout>
 
-      <h2>Principais Funcionalidades</h2>
+      <h2>{t.docs.gettingStarted.mainFeatures}</h2>
       <ul>
-        <li>Crie endpoints mock com resposta JSON customizada</li>
-        <li>Suporte a múltiplos métodos HTTP (GET, POST, PUT, DELETE)</li>
-        <li>Schemas e relacionamentos visuais</li>
-        <li>Geração automática de dados fake com Faker</li>
-        <li>Autenticação: JWT, API Key, Basic, Bearer</li>
-        <li>Interface web para gerenciar endpoints</li>
-        <li>CLI para iniciar tudo com um comando</li>
+        <li>{t.docs.gettingStarted.featureList.createEndpoints}</li>
+        <li>{t.docs.gettingStarted.featureList.httpMethods}</li>
+        <li>{t.docs.gettingStarted.featureList.schemas}</li>
+        <li>{t.docs.gettingStarted.featureList.fakeData}</li>
+        <li>{t.docs.gettingStarted.featureList.auth}</li>
+        <li>{t.docs.gettingStarted.featureList.webUI}</li>
+        <li>{t.docs.gettingStarted.featureList.cli}</li>
       </ul>
 
-      <h2>Próximos Passos</h2>
+      <h2>{t.docs.gettingStarted.nextSteps}</h2>
       <p>
-        Pronto para começar? Vá para a página de{" "}
+        {t.docs.gettingStarted.readyToStart}{" "}
         <a href="/docs/installation">
-          Installation
+          {t.docs.installation.title}
         </a>{" "}
-        para aprender como instalar e configurar.
+        {t.docs.gettingStarted.toLearnInstall}
       </p>
     </>
   );

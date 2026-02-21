@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Terminal, LayoutDashboard, Rocket, Check, Copy } from "lucide-react";
 import { Terminal as AnimatedTerminal, AnimatedSpan, TypingAnimation, Safari } from "./ui";
+import { useTranslation } from "@/lib/i18n";
 
 const codeExampleHooks = [
   { type: "keyword", content: "import" },
@@ -122,6 +123,7 @@ function UsersList() {
 };`;
 
 function CodePreview() {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
 
   const copyCode = async () => {
@@ -145,12 +147,12 @@ function CodePreview() {
           {copied ? (
             <>
               <Check className="h-3 w-3" />
-              Copied!
+              {t.common.copied}
             </>
           ) : (
             <>
               <Copy className="h-3 w-3" />
-              Copy
+              {t.common.copy}
             </>
           )}
         </button>
@@ -170,48 +172,6 @@ function CodePreview() {
   );
 }
 
-const steps = [
-  {
-    icon: Terminal,
-    title: "Inicie o servidor",
-    description: "Execute um comando simples para iniciar",
-    code: "npx mockario start",
-    component: (
-      <>
-        <AnimatedTerminal className="w-full h-48 md:h-56 lg:h-72 -mx-2 md:mx-0">
-          <TypingAnimation>npx mockario start</TypingAnimation>
-          <AnimatedSpan>🚀 Starting Mockario...</AnimatedSpan>
-          <AnimatedSpan>📦 Starting mock server on port 3001...</AnimatedSpan>
-          <AnimatedSpan>🌐 Starting Mockario Web Interface...</AnimatedSpan>
-          <AnimatedSpan>✔ Mockario is running!</AnimatedSpan>
-        </AnimatedTerminal>
-      </>
-    )
-  },
-  {
-    icon: LayoutDashboard,
-    title: "Configure seus endpoints",
-    description: "Use a interface web para criar e editar",
-    code: "http://localhost:3001",
-    component: (
-      <div className="w-full">
-        <Safari
-          className="pb-0 mb-0"
-          url="http://localhost:3001"
-          imageSrc="/create-endpoint.png"
-        />
-      </div>
-    ),
-  },
-  {
-    icon: Rocket,
-    title: "Desenvolva sem esperar",
-    description: "Comece a consumir suas APIs mock",
-    code: "GET /api/users",
-    component: <CodePreview />
-  },
-];
-
 const container = {
   hidden: { opacity: 0 },
   show: {
@@ -228,6 +188,50 @@ const item = {
 };
 
 export function HowItWorks() {
+  const { t } = useTranslation();
+
+  const steps = [
+    {
+      icon: Terminal,
+      title: t.home.steps.startServer,
+      description: t.home.steps.startServerDesc,
+      code: "npx mockario start",
+      component: (
+        <>
+          <AnimatedTerminal className="w-full h-48 md:h-56 lg:h-72 -mx-2 md:mx-0">
+            <TypingAnimation>npx mockario start</TypingAnimation>
+            <AnimatedSpan>🚀 Starting Mockario...</AnimatedSpan>
+            <AnimatedSpan>📦 Starting mock server on port 3001...</AnimatedSpan>
+            <AnimatedSpan>🌐 Starting Mockario Web Interface...</AnimatedSpan>
+            <AnimatedSpan>✔ Mockario is running!</AnimatedSpan>
+          </AnimatedTerminal>
+        </>
+      )
+    },
+    {
+      icon: LayoutDashboard,
+      title: t.home.steps.configure,
+      description: t.home.steps.configureDesc,
+      code: "http://localhost:3001",
+      component: (
+        <div className="w-full">
+          <Safari
+            className="pb-0 mb-0"
+            url="http://localhost:3001"
+            imageSrc="/create-endpoint.png"
+          />
+        </div>
+      ),
+    },
+    {
+      icon: Rocket,
+      title: t.home.steps.develop,
+      description: t.home.steps.developDesc,
+      code: "GET /api/users",
+      component: <CodePreview />
+    },
+  ];
+
   return (
     <section className="relative overflow-hidden dark:bg-neutral-950 bg-neutral-100 py-12 md:py-20">
       <div className="absolute inset-0 bg-grid-dots opacity-30" />
@@ -241,10 +245,10 @@ export function HowItWorks() {
           className="mx-auto max-w-2xl text-center mb-8 md:mb-12"
         >
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight dark:text-white text-neutral-900">
-            Como funciona
+            {t.home.howItWorks}
           </h2>
           <p className="mt-3 md:mt-4 dark:text-neutral-400 text-neutral-600 text-sm md:text-base">
-            Em três passos você está pronto para desenvolver
+            {t.home.howItWorksSubtitle}
           </p>
         </motion.div>
 

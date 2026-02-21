@@ -17,48 +17,56 @@ import {
   Send,
   FileText,
 } from "lucide-react";
+import { useTranslation } from "@/lib/i18n";
 
 const navSections = [
   {
-    title: "Getting Started",
+    titleKey: "gettingStarted" as const,
     icon: BookOpen,
     items: [
-      { title: "Introduction", href: "/docs/getting-started" },
-      { title: "Installation", href: "/docs/installation" },
-      { title: "Quick Start", href: "/docs/quick-start" },
+      { titleKey: "introduction" as const, href: "/docs/getting-started" },
+      { titleKey: "installation" as const, href: "/docs/installation" },
+      { titleKey: "quickStart" as const, href: "/docs/quick-start" },
     ],
   },
   {
-    title: "Features",
+    titleKey: "features" as const,
     icon: Zap,
     items: [
-      { title: "Endpoints", href: "/docs/features/endpoints" },
-      { title: "Schemas", href: "/docs/features/schemas" },
-      { title: "Authentication", href: "/docs/features/authentication" },
+      { titleKey: "endpoints" as const, href: "/docs/features/endpoints" },
+      { titleKey: "schemas" as const, href: "/docs/features/schemas" },
+      { titleKey: "authentication" as const, href: "/docs/features/authentication" },
     ],
   },
   {
-    title: "HTTP Client",
+    titleKey: "httpClient" as const,
     icon: Send,
     items: [
-      { title: "Overview", href: "/docs/http-client" },
+      { titleKey: "overview" as const, href: "/docs/http-client" },
     ],
   },
   {
-    title: "API Reference",
+    titleKey: "apiReference" as const,
     icon: FileText,
     items: [
-      { title: "REST API", href: "/docs/api-reference" },
+      { titleKey: "restApi" as const, href: "/docs/api-reference" },
     ],
   },
 ];
 
 function NavGroup({ section, currentPath }: { section: typeof navSections[0]; currentPath: string }) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(
     section.items.some((item) => item.href === currentPath)
   );
 
   const isActive = section.items.some((item) => item.href === currentPath);
+
+  const title = t.sidebar[section.titleKey];
+  const items = section.items.map(item => ({
+    ...item,
+    title: t.sidebar[item.titleKey]
+  }));
 
   return (
     <div className="mb-2">
@@ -72,7 +80,7 @@ function NavGroup({ section, currentPath }: { section: typeof navSections[0]; cu
       >
         <div className="flex items-center gap-2">
           <section.icon className="h-4 w-4" />
-          <span>{section.title}</span>
+          <span>{title}</span>
         </div>
         <ChevronDown
           className={`h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`}
@@ -88,7 +96,7 @@ function NavGroup({ section, currentPath }: { section: typeof navSections[0]; cu
             className="overflow-hidden"
           >
             <div className="ml-4 mt-1 space-y-1 border-l border-border pl-2">
-              {section.items.map((item) => (
+              {items.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
@@ -111,6 +119,7 @@ function NavGroup({ section, currentPath }: { section: typeof navSections[0]; cu
 
 export function DocsSidebar() {
   const pathname = usePathname();
+  const { t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const sidebarContent = (
@@ -120,12 +129,12 @@ export function DocsSidebar() {
           <div className="h-8 w-8 rounded-lg bg-green-600 flex items-center justify-center">
             <BookOpen className="h-5 w-5 text-white" />
           </div>
-          <span className="font-semibold">Docs</span>
+          <span className="font-semibold">{t.common.docs}</span>
         </Link>
       </div>
       <nav>
         {navSections.map((section) => (
-          <NavGroup key={section.title} section={section} currentPath={pathname} />
+          <NavGroup key={section.titleKey} section={section} currentPath={pathname} />
         ))}
       </nav>
     </div>

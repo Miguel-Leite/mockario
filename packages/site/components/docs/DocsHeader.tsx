@@ -1,13 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { Github, Menu, X, BookOpen, ArrowLeft } from "lucide-react";
+import { Github, Menu, X, ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { SearchModal } from "../SearchModal";
 import { AnimatedThemeToggler } from "../ui";
 import { usePathname } from "next/navigation";
+import { LanguageSwitch } from "../LanguageSwitch";
+import { useTranslation } from "@/lib/i18n";
 
 export function DocsHeader() {
+  const { t } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
@@ -21,12 +24,13 @@ export function DocsHeader() {
           <div className="hidden md:flex items-center gap-2 text-sm text-muted-foreground">
             <span>/</span>
             <Link href="/docs" className="hover:text-foreground transition-colors">
-              Docs
+              {t.common.docs}
             </Link>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <SearchModal />
+          <LanguageSwitch />
           <AnimatedThemeToggler duration={400} />
           <a
             href="https://github.com/Miguel-Leite/mockario"

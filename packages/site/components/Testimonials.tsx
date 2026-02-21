@@ -2,8 +2,11 @@
 
 import { motion } from "framer-motion";
 import { MessageSquare } from "lucide-react";
+import { useTranslation } from "@/lib/i18n";
 
 export function Testimonials() {
+  const { t } = useTranslation();
+
   return (
     <section className="relative overflow-hidden dark:bg-neutral-950 bg-neutral-100 py-20">
       <div className="absolute inset-0 bg-grid-dots opacity-30" />
@@ -17,10 +20,10 @@ export function Testimonials() {
           className="mx-auto max-w-2xl text-center mb-12"
         >
           <h2 className="text-3xl font-bold tracking-tight md:text-4xl dark:text-white text-neutral-900">
-            O que dizem os devs
+            {t.home.testimonials}
           </h2>
           <p className="mt-4 dark:text-neutral-400 text-neutral-600">
-            Feedback da comunidade de desenvolvedores
+            {t.home.testimonialsSubtitle}
           </p>
         </motion.div>
 
@@ -33,7 +36,7 @@ export function Testimonials() {
         >
           <MessageSquare className="mx-auto mb-4 h-10 w-10 text-green-600 opacity-50" />
           <p className="text-lg dark:text-neutral-300 text-neutral-700 italic mb-4">
-            &ldquo;Em breve feedback da comunidade. Contribua no GitHub!&rdquo;
+            &ldquo;{t.home.communityFeedback}&rdquo;
           </p>
           <p className="text-sm dark:text-neutral-500 text-neutral-500">
             — Mockario Community

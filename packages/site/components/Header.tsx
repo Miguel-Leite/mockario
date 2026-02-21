@@ -7,32 +7,19 @@ import { useState } from "react";
 import { LanguageSwitch, SearchModal } from "./";
 import { AnimatedThemeToggler } from "./ui";
 import { motion, AnimatePresence } from "framer-motion";
-
-const menu = [
-  {
-    label: "Docs",
-    href: "/docs",
-  },
-  {
-    label: "Features",
-    href: "/#features",
-  },
-  {
-    label: "Playground",
-    href: "/#playground",
-  },
-  {
-    label: "Blog",
-    href: "/#blog",
-  },
-  {
-    label: "Roadmap",
-    href: "/#roadmap",
-  },
-];
+import { useTranslation } from "@/lib/i18n";
 
 export function Header() {
+  const { t } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const menu = [
+    { label: t.nav.docs, href: "/docs" },
+    { label: t.nav.features, href: "/#features" },
+    { label: t.nav.playground, href: "/#playground" },
+    { label: t.nav.blog, href: "/#blog" },
+    { label: t.nav.roadmap, href: "/#roadmap" },
+  ];
 
   return (
     <>
@@ -93,7 +80,7 @@ export function Header() {
             >
               <div className="flex flex-col p-4">
                 <div className="flex items-center justify-between mb-6">
-                  <span className="font-semibold">Menu</span>
+                  <span className="font-semibold">{t.common.menu}</span>
                   <button
                     className="p-2 rounded-md hover:bg-secondary transition-colors"
                     onClick={() => setMobileMenuOpen(false)}

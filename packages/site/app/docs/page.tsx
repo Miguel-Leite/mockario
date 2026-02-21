@@ -1,46 +1,51 @@
-import Link from "next/link";
-import { ArrowRight, BookOpen, Terminal, Zap, Database, Shield, Send } from "lucide-react";
+"use client";
 
-const sections = [
-  {
-    icon: BookOpen,
-    title: "Getting Started",
-    description: "Aprenda os conceitos básicos do Mockario",
-    href: "/docs/getting-started",
-  },
-  {
-    icon: Terminal,
-    title: "Installation",
-    description: "Como instalar e configurar",
-    href: "/docs/installation",
-  },
-  {
-    icon: Zap,
-    title: "Quick Start",
-    description: "Guia rápido para começar",
-    href: "/docs/quick-start",
-  },
-  {
-    icon: Database,
-    title: "Features",
-    description: "Endpoints, Schemas, Authentication",
-    href: "/docs/features/endpoints",
-  },
-  {
-    icon: Send,
-    title: "HTTP Client",
-    description: "Teste seus endpoints",
-    href: "/docs/http-client",
-  },
-];
+import Link from "next/link";
+import { ArrowRight, BookOpen, Terminal, Zap, Database, Send } from "lucide-react";
+import { useTranslation } from "@/lib/i18n";
 
 export default function DocsPage() {
+  const { t } = useTranslation();
+
+  const sections = [
+    {
+      icon: BookOpen,
+      title: t.docs.gettingStarted.title,
+      description: t.docs.gettingStarted.description,
+      href: "/docs/getting-started",
+    },
+    {
+      icon: Terminal,
+      title: t.docs.installation.title,
+      description: t.docs.installation.description,
+      href: "/docs/installation",
+    },
+    {
+      icon: Zap,
+      title: t.docs.quickStart.title,
+      description: t.docs.quickStart.description,
+      href: "/docs/quick-start",
+    },
+    {
+      icon: Database,
+      title: t.docs.endpoints.title,
+      description: t.docs.endpoints.description,
+      href: "/docs/features/endpoints",
+    },
+    {
+      icon: Send,
+      title: t.docs.httpClient.title,
+      description: t.docs.httpClient.description,
+      href: "/docs/http-client",
+    },
+  ];
+
   return (
     <div className="space-y-8">
       <div className="space-y-4">
-        <h1 className="text-3xl font-bold tracking-tight">Documentação</h1>
+        <h1 className="text-3xl font-bold tracking-tight">{t.docs.title}</h1>
         <p className="text-lg text-muted-foreground">
-          Tudo que você precisa saber para usar o Mockario
+          {t.docs.description}
         </p>
       </div>
 

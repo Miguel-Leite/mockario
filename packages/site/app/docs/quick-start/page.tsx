@@ -1,53 +1,58 @@
+"use client";
+
 import { CodeBlock, Callout } from "@/components/docs";
+import { useTranslation } from "@/lib/i18n";
 
 export default function QuickStartPage() {
+  const { t } = useTranslation();
+
   return (
     <>
-      <h1>Quick Start</h1>
+      <h1>{t.docs.quickStart.title}</h1>
       <p className="text-lg text-muted-foreground">
-        Crie seu primeiro endpoint mock em menos de 5 minutos.
+        {t.docs.quickStart.description}
       </p>
 
-      <h2>Iniciar o Servidor</h2>
-      <p>Execute o comando abaixo para iniciar o Mockario:</p>
+      <h2>{t.docs.quickStart.startServer}</h2>
+      <p>{t.docs.quickStart.runCommand}</p>
 
       <CodeBlock code="npx mockario start" language="bash" />
 
       <Callout type="info">
-        Este comando ira iniciar:
+        {t.docs.quickStart.thisCommandWillStart}
         <ul className="mt-2 list-disc list-inside">
-          <li>Servidor mock na porta 3001</li>
-          <li>Interface web na porta 5173</li>
-          <li>Abrir automaticamente o browser</li>
+          <li>{t.docs.quickStart.mockServerPort}</li>
+          <li>{t.docs.quickStart.webInterfacePort}</li>
+          <li>{t.docs.quickStart.autoOpenBrowser}</li>
         </ul>
       </Callout>
 
-      <h2>Criar seu Primeiro Endpoint</h2>
+      <h2>{t.docs.quickStart.createFirstEndpoint}</h2>
       <ol>
-        <li>Acesse a interface web em http://localhost:5173</li>
-        <li>Clique no botão &ldquo;New Endpoint&rdquo;</li>
-        <li>Preencha os campos:</li>
+        <li>{t.docs.quickStart.accessWebInterface}</li>
+        <li>{t.docs.quickStart.clickNewEndpoint}</li>
+        <li>{t.docs.quickStart.fillFields}</li>
         <ul>
-          <li><strong>Path:</strong> /api/users</li>
-          <li><strong>Method:</strong> GET</li>
-          <li><strong>Response:</strong> {"{ \"users\": [] }"}</li>
+          <li><strong>{t.docs.quickStart.path}:</strong> /api/users</li>
+          <li><strong>{t.docs.quickStart.method}:</strong> GET</li>
+          <li><strong>{t.docs.quickStart.response}:</strong> {"{ \"users\": [] }"}</li>
         </ul>
-        <li>Clique em &ldquo;Save&rdquo;</li>
+        <li>{t.docs.quickStart.clickSave}</li>
       </ol>
 
-      <h2>Testar o Endpoint</h2>
-      <p>Agora você pode testar seu endpoint:</p>
+      <h2>{t.docs.quickStart.testEndpoint}</h2>
+      <p>{t.docs.quickStart.nowYouCanTest}</p>
 
       <CodeBlock code="curl http://localhost:3001/api/users" language="bash" />
 
-      <h2>Próximos Passos</h2>
+      <h2>{t.docs.quickStart.nextSteps}</h2>
       <p>
-        Explore mais funcionalidades:
+        {t.docs.quickStart.exploreMore}
       </p>
       <ul>
-        <li><a href="/docs/features/endpoints">Endpoints</a> - Learn more about endpoints</li>
-        <li><a href="/docs/features/schemas">Schemas</a> - Create data schemas</li>
-        <li><a href="/docs/features/authentication">Authentication</a> - Add auth to your endpoints</li>
+        <li><a href="/docs/features/endpoints">{t.docs.quickStart.learnMoreEndpoints}</a></li>
+        <li><a href="/docs/features/schemas">{t.docs.quickStart.createDataSchemas}</a></li>
+        <li><a href="/docs/features/authentication">{t.docs.quickStart.addAuthEndpoints}</a></li>
       </ul>
     </>
   );

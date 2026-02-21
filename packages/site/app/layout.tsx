@@ -6,8 +6,8 @@ import { Providers } from "@/components/Providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Mockario - Mock APIs rapidinho",
-  description: "Desenvolva sem esperar o backend. Crie APIs simuladas localmente com facilidade.",
+  title: "Mockario - Mock APIs fast",
+  description: "Develop without waiting for the backend. Create mock APIs locally with ease.",
 };
 
 export default function RootLayout({

@@ -13,48 +13,42 @@ interface I18nContextType {
 
 const dictionaries = { pt, en };
 
-const I18nContext = createContext<I18nContextType | undefined>(undefined);
+const I18nContext = createContext<I18nContextType>({
+  locale: "en",
+  setLocale: () => {},
+  t: en,
+});
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocale] = useState<Locale>("pt");
+  const [locale, setLocaleState] = useState<Locale>("en");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    const savedLocale = localStorage.getItem("mockario-locale") as Locale;
+    const savedLocale = localStorage.getItem("mockario-locale") as Locale | null;
     if (savedLocale && (savedLocale === "pt" || savedLocale === "en")) {
-      setLocale(savedLocale);
+      setLocaleState(savedLocale);
     }
   }, []);
 
-  const handleSetLocale = (newLocale: Locale) => {
-    setLocale(newLocale);
+  const setLocale = (newLocale: Locale) => {
+    setLocaleState(newLocale);
     localStorage.setItem("mockario-locale", newLocale);
   };
 
-  if (!mounted) {
-    return <>{children}</>;
-  }
+  const value = {
+    locale,
+    setLocale,
+    t: dictionaries[locale],
+  };
 
   return (
-    <I18nContext.Provider value={{ locale, setLocale: handleSetLocale, t: dictionaries[locale] }}>
+    <I18nContext.Provider value={value}>
       {children}
     </I18nContext.Provider>
   );
 }
 
 export function useTranslation() {
-  const context = useContext(I18nContext);
-  if (!context) {
-    throw new Error("useTranslation must be used within an I18nProvider");
-  }
-  return context;
-}
-
-export function useLocale() {
-  const context = useContext(I18nContext);
-  if (!context) {
-    throw new Error("useLocale must be used within an I18nProvider");
-  }
-  return context;
+  return useContext(I18nContext);
 }

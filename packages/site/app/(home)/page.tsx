@@ -7,45 +7,45 @@ import { useTheme } from "next-themes";
 import { Testimonials } from "@/components/Testimonials";
 import { CodeExample } from "@/components/CodeExample";
 import { HowItWorks } from "@/components/HowItWorks";
-
-const features = [
-  {
-    icon: Database,
-    title: "Schemas & Relationships",
-    description:
-      "Criação de schemas e relacionamentos visuais, geração automática de dados mock",
-  },
-  {
-    icon: Shield,
-    title: "Authentication",
-    description: "Suporte a JWT, API Key, Basic & Bearer",
-  },
-  {
-    icon: Send,
-    title: "Built-in HTTP Client",
-    description: "Testar endpoints sem sair da interface",
-  },
-  {
-    icon: Zap,
-    title: "Instant Setup",
-    description: "Iniciar servidor + web UI com um comando",
-  },
-  {
-    icon: Wand2,
-    title: "Fake Data Generator",
-    description: "Geração de dados realistas com Faker",
-  },
-  {
-    icon: Code2,
-    title: "Developer Friendly",
-    description: "CLI, Web UI e React Hooks",
-  },
-];
-
-
+import { useTranslation } from "@/lib/i18n";
 
 export default function Home() {
+  const { t } = useTranslation();
   const { theme } = useTheme();
+
+  const features = [
+    {
+      icon: Database,
+      title: t.home.features.schemas.title,
+      description: t.home.features.schemas.description,
+    },
+    {
+      icon: Shield,
+      title: t.home.features.authentication.title,
+      description: t.home.features.authentication.description,
+    },
+    {
+      icon: Send,
+      title: t.home.features.httpClient.title,
+      description: t.home.features.httpClient.description,
+    },
+    {
+      icon: Zap,
+      title: t.home.features.instantSetup.title,
+      description: t.home.features.instantSetup.description,
+    },
+    {
+      icon: Wand2,
+      title: t.home.features.fakeData.title,
+      description: t.home.features.fakeData.description,
+    },
+    {
+      icon: Code2,
+      title: t.home.features.developerFriendly.title,
+      description: t.home.features.developerFriendly.description,
+    },
+  ];
+
   return (
     <>
       <div className="min-h-screen relative overflow-hidden space-y-28 pb-10">
@@ -53,18 +53,16 @@ export default function Home() {
 
         <div className="absolute inset-0 dark:bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-neutral-900/20 via-transparent to-transparent bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-neutral-200/50 via-transparent to-transparent" />
 
-        {/* <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-green-500/10 rounded-full blur-[120px]" /> */}
         <div className="relative w-full z-10">
           <div className="max-w-3xl w-full mx-auto mt-20 md:mt-32 lg:mt-40 px-4">
             <div className="flex flex-col items-center justify-center text-center gap-6 md:gap-8">
               <div className="space-y-4">
                 <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold dark:text-white text-neutral-900">
-                  Mock APIs{" "}
-                  <span className="text-green-600">rapidinho </span>
-                  desenvolva sem esperar o backend
+                  {t.home.title}{" "}
+                  <span className="text-green-600">{t.home.subtitle}</span>
                 </h1>
                 <p className="text-base md:text-lg dark:text-white text-neutral-700 px-2 md:px-0">
-                  Crie APIs simuladas localmente e acelere seu desenvolvimento front-end.
+                  {t.home.description}
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
@@ -72,7 +70,7 @@ export default function Home() {
                   href="/docs"
                   className="inline-flex items-center justify-center rounded-md bg-green-600 px-6 py-2 font-medium text-white hover:bg-green-600/90 transition-colors"
                 >
-                  Get Started
+                  {t.home.getStarted}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
                 <Link
@@ -81,7 +79,7 @@ export default function Home() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center rounded-md border dark:border-neutral-800 border-neutral-300 dark:text-white text-neutral-800 dark:bg-neutral-900 bg-neutral-100 px-6 py-2 font-medium hover:bg-neutral-200 transition-colors"
                 >
-                  GitHub
+                  {t.common.github}
                   <Github className="ml-2 h-4 w-4" />
                 </Link>
               </div>
@@ -93,10 +91,10 @@ export default function Home() {
         <div className="max-w-6xl w-full mx-auto px-4 text-center space-y-20">
           <div>
             <h2 className="text-3xl font-bold tracking-tight md:text-4xl dark:text-white text-neutral-900">
-              Tudo que você precisa
+              {t.home.everythingYouNeed}
             </h2>
             <p className="mt-4 dark:text-neutral-400 text-neutral-600">
-              Ferramentas poderosas para criar e gerenciar suas APIs mock
+              {t.home.powerfulTools}
             </p>
           </div>
 

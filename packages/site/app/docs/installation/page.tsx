@@ -1,46 +1,51 @@
+"use client";
+
 import { CodeBlock, Callout } from "@/components/docs";
+import { useTranslation } from "@/lib/i18n";
 
 export default function InstallationPage() {
+  const { t } = useTranslation();
+
   return (
     <>
-      <h1>Installation</h1>
+      <h1>{t.docs.installation.title}</h1>
       <p className="text-lg text-muted-foreground">
-        Aprenda como instalar e configurar o Mockario no seu projeto.
+        {t.docs.installation.description}
       </p>
 
-      <h2>Requisitos</h2>
+      <h2>{t.docs.installation.requirements}</h2>
       <ul>
-        <li>Node.js 18 ou superior</li>
-        <li>npm ou yarn</li>
+        <li>{t.docs.installation.nodejs}</li>
+        <li>{t.docs.installation.npm}</li>
       </ul>
 
-      <h2>Instalação</h2>
+      <h2>{t.docs.installation.installation}</h2>
       <p>
-        O Mockario pode ser instalado globalmente via npm:
+        {t.docs.installation.installGlobal}
       </p>
 
       <CodeBlock code="npm install -g mockario" language="bash" />
 
-      <p>Ou pode ser usado diretamente com npx:</p>
+      <p>{t.docs.installation.orUseNpx}</p>
 
       <CodeBlock code="npx mockario --version" language="bash" />
 
       <Callout type="note">
-        Recomendamos usar npx para evitar instalações globais e sempre usar a versão mais recente.
+        {t.docs.installation.recommendNpx}
       </Callout>
 
-      <h2>Verificação</h2>
-      <p>Para verificar se a instalação foi bem sucedida:</p>
+      <h2>{t.docs.installation.verification}</h2>
+      <p>{t.docs.installation.verifyInstall}</p>
 
       <CodeBlock code="npx mockario --help" language="bash" />
 
-      <h2>Próximos Passos</h2>
+      <h2>{t.docs.installation.nextSteps}</h2>
       <p>
-        Agora que você tem o Mockario instalado, vá para o{" "}
+        {t.docs.installation.nowInstalled}{" "}
         <a href="/docs/quick-start">
-          Quick Start
+          {t.docs.quickStart.title}
         </a>{" "}
-        para criar seu primeiro endpoint mock.
+        {t.docs.installation.toCreateFirst}
       </p>
     </>
   );

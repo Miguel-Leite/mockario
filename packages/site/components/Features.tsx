@@ -9,40 +9,7 @@ import {
   Wand2,
   Code2,
 } from "lucide-react";
-
-const features = [
-  {
-    icon: Database,
-    title: "Schemas & Relationships",
-    description:
-      "Criação de schemas e relacionamentos visuais, geração automática de dados mock",
-  },
-  {
-    icon: Shield,
-    title: "Authentication",
-    description: "Suporte a JWT, API Key, Basic & Bearer",
-  },
-  {
-    icon: Send,
-    title: "Built-in HTTP Client",
-    description: "Testar endpoints sem sair da interface",
-  },
-  {
-    icon: Zap,
-    title: "Instant Setup",
-    description: "Iniciar servidor + web UI com um comando",
-  },
-  {
-    icon: Wand2,
-    title: "Fake Data Generator",
-    description: "Geração de dados realistas com Faker",
-  },
-  {
-    icon: Code2,
-    title: "Developer Friendly",
-    description: "CLI, Web UI e React Hooks",
-  },
-];
+import { useTranslation } from "@/lib/i18n";
 
 const container = {
   hidden: { opacity: 0 },
@@ -60,6 +27,41 @@ const item = {
 };
 
 export function Features() {
+  const { t } = useTranslation();
+
+  const features = [
+    {
+      icon: Database,
+      title: t.home.features.schemas.title,
+      description: t.home.features.schemas.description,
+    },
+    {
+      icon: Shield,
+      title: t.home.features.authentication.title,
+      description: t.home.features.authentication.description,
+    },
+    {
+      icon: Send,
+      title: t.home.features.httpClient.title,
+      description: t.home.features.httpClient.description,
+    },
+    {
+      icon: Zap,
+      title: t.home.features.instantSetup.title,
+      description: t.home.features.instantSetup.description,
+    },
+    {
+      icon: Wand2,
+      title: t.home.features.fakeData.title,
+      description: t.home.features.fakeData.description,
+    },
+    {
+      icon: Code2,
+      title: t.home.features.developerFriendly.title,
+      description: t.home.features.developerFriendly.description,
+    },
+  ];
+
   return (
     <section id="features" className="relative overflow-hidden bg-neutral-950 py-20">
       <div className="absolute inset-0 bg-grid-dots opacity-30" />
@@ -73,10 +75,10 @@ export function Features() {
           className="mx-auto max-w-2xl text-center mb-12"
         >
           <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-            Tudo que você precisa
+            {t.home.everythingYouNeed}
           </h2>
           <p className="mt-4 text-neutral-400">
-            Ferramentas poderosas para criar e gerenciar suas APIs mock
+            {t.home.powerfulTools}
           </p>
         </motion.div>
 

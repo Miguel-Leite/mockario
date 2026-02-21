@@ -1,8 +1,13 @@
+"use client";
+
 import Link from "next/link";
 import { Github, Package } from "lucide-react";
 import Image from "next/image";
+import { useTranslation } from "@/lib/i18n";
 
 export function Footer() {
+  const { t } = useTranslation();
+
   return (
     <footer className="border-t border-border dark:bg-neutral-950 bg-white">
       <div className="container mx-auto px-4 py-8">
@@ -12,7 +17,7 @@ export function Footer() {
               <Image src="/logo.png" alt="Mockario" width={100} height={32} />
             </Link>
             <span className="text-sm dark:text-muted-foreground text-neutral-600">
-              Mock APIs rapidinho
+              {t.home.subtitle}
             </span>
           </div>
           <div className="flex items-center gap-4">
@@ -23,7 +28,7 @@ export function Footer() {
               className="flex items-center gap-2 text-sm dark:text-muted-foreground text-neutral-600 hover:text-foreground transition-colors"
             >
               <Github className="h-4 w-4" />
-              GitHub
+              {t.common.github}
             </a>
             <a
               href="https://www.npmjs.com/package/mockario"
@@ -32,7 +37,7 @@ export function Footer() {
               className="flex items-center gap-2 text-sm dark:text-muted-foreground text-neutral-600 hover:text-foreground transition-colors"
             >
               <Package className="h-4 w-4" />
-              npm
+              {t.common.npm}
             </a>
           </div>
         </div>
