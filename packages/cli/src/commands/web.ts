@@ -11,7 +11,7 @@ let webProcess: ChildProcess | null = null;
 export async function webCommand(options: WebOptions): Promise<void> {
   const { port, server } = options;
 
-  console.log('\n🌐 Starting Mockly Web Interface...\n');
+  console.log('\n🌐 Starting Mockario Web Interface...\n');
 
   webProcess = spawn('npm', ['run', 'dev'], {
     cwd: resolve(__dirname, '../../../web'),
@@ -20,7 +20,7 @@ export async function webCommand(options: WebOptions): Promise<void> {
     detached: false,
   });
 
-  console.log(`✅ Web interface running at http://localhost:${port}`);
+  console.log(`✔ Web interface running at http://localhost:${port}`);
   console.log(`   Connected to server: ${server}`);
   console.log('\nPress Ctrl+C to stop.\n');
 

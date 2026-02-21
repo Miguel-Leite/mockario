@@ -12,7 +12,7 @@ let serverProcess: ChildProcess | null = null;
 export async function startCommand(options: StartOptions): Promise<void> {
   const { port, webPort, open } = options;
 
-  console.log('\n🚀 Starting Mockly...\n');
+  console.log('\n🚀 Starting Mockario...\n');
 
   console.log(`📦 Starting mock server on port ${port}...`);
   serverProcess = spawn('npm', ['run', 'dev'], {
@@ -30,19 +30,19 @@ export async function startCommand(options: StartOptions): Promise<void> {
     open(`http://localhost:${port}`);
   }
 
-  console.log('\n✅ Mockly is running!');
+  console.log('\n✔ Mockario is running!');
   console.log(`   Server & UI: http://localhost:${port}`);
   console.log('\nPress Ctrl+C to stop.\n');
 
   // Handle cleanup
   process.on('SIGINT', () => {
-    console.log('\n\n👋 Shutting down Mockly...');
+    console.log('\n\n👋 Shutting down Mockario...');
     if (serverProcess) serverProcess.kill();
     process.exit(0);
   });
 
   process.on('SIGTERM', () => {
-    console.log('\n\n👋 Shutting down Mockly...');
+    console.log('\n\n👋 Shutting down Mockario...');
     if (serverProcess) serverProcess.kill();
     process.exit(0);
   });

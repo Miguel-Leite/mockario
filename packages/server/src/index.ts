@@ -10,7 +10,7 @@ const isMain = require.main === module || process.argv[1]?.includes('index.js') 
 
 if (isMain) {
   const port = parseInt(process.env.PORT || '3001');
-  console.log(`Starting Mockly Server on port ${port}...`);
+  console.log(`Starting Mockario Server on port ${port}...`);
   startMockServer({ port });
 }
 

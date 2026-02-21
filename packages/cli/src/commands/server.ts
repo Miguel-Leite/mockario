@@ -10,7 +10,7 @@ let serverProcess: ChildProcess | null = null;
 export async function serverCommand(options: ServerOptions): Promise<void> {
   const { port } = options;
 
-  console.log('\n📦 Starting Mockly Server...\n');
+  console.log('\n📦 Starting Mockario Server...\n');
 
   serverProcess = spawn('npm', ['run', 'dev'], {
     cwd: resolve(__dirname, '../../../server'),
@@ -19,7 +19,7 @@ export async function serverCommand(options: ServerOptions): Promise<void> {
     detached: false,
   });
 
-  console.log(`✅ Server running at http://localhost:${port}`);
+  console.log(`✔ Server running at http://localhost:${port}`);
   console.log('\nPress Ctrl+C to stop.\n');
 
   process.on('SIGINT', () => {
