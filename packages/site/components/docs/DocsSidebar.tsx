@@ -16,6 +16,7 @@ import {
   Shield,
   Send,
   FileText,
+  Code2,
 } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
 
@@ -50,6 +51,13 @@ const navSections = [
     icon: FileText,
     items: [
       { titleKey: "restApi" as const, href: "/docs/api-reference" },
+    ],
+  },
+  {
+    titleKey: "hooks" as const,
+    icon: Code2,
+    items: [
+      { titleKey: "overview" as const, href: "/docs/hooks" },
     ],
   },
 ];

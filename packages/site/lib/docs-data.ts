@@ -81,6 +81,15 @@ export const docsPages: DocPage[] = [
     contentEn: `Complete reference for the Mockario REST API. Base URL: http://localhost:3001/api. Mock Endpoints: GET /mock/endpoints List all endpoints, POST /mock/endpoints Create endpoint, PUT /mock/endpoints/:id Update endpoint, DELETE /mock/endpoints/:id Delete endpoint. Schemas: GET /schemas List schemas, POST /schemas Create schema, GET /schemas/:name/generate Generate data. Logs: GET /logs List request logs, DELETE /logs Clear logs. Users Auth: POST /auth/register Register user, POST /auth/login Login, GET /auth/me Get current user. Status Codes: 200 Success, 201 Created, 400 Bad Request, 401 Unauthorized, 404 Not Found, 500 Internal Server Error.`,
     contentPt: `Referência completa da API REST do Mockario. Base URL: http://localhost:3001/api. Mock Endpoints: GET /mock/endpoints Listar todos os endpoints, POST /mock/endpoints Criar endpoint, PUT /mock/endpoints/:id Atualizar endpoint, DELETE /mock/endpoints/:id Deletar endpoint. Schemas: GET /schemas Listar schemas, POST /schemas Criar schema, GET /schemas/:name/generate Gerar dados. Logs: GET /logs Listar logs de requisições, DELETE /logs Limpar logs. Usuários Auth: POST /auth/register Registrar usuário, POST /auth/login Login, GET /auth/me Obter usuário atual. Códigos de Status: 200 Sucesso, 201 Criado, 400 Bad Request, 401 Unauthorized, 404 Not Found, 500 Internal Server Error.`,
   },
+  {
+    titleEn: "Hooks",
+    titlePt: "Hooks",
+    slug: "/docs/hooks",
+    sectionEn: "Hooks",
+    sectionPt: "Hooks",
+    contentEn: `Mockario provides React hooks for easy integration with your front-end. useMockEndpoints returns all endpoints and provides create, update, delete functions. useMockServer checks connection status to the mock server. useMockLogs returns request logs. MockarioProvider wraps your app and sets up React Query Client. Example: import { useMockEndpoints } from 'mockario', const { endpoints, isLoading, create, update, remove } = useMockEndpoints('http://localhost:3001').`,
+    contentPt: `O Mockario oferece hooks React para facilitar a integração com sua aplicação front-end. useMockEndpoints retorna todos os endpoints e fornece funções para criar, atualizar e deletar. useMockServer verifica o status da conexão com o servidor mock. useMockLogs retorna os logs de requisições. MockarioProvider envolve sua aplicação e configura o React Query Client. Exemplo: import { useMockEndpoints } from 'mockario', const { endpoints, isLoading, create, update, remove } = useMockEndpoints('http://localhost:3001').`,
+  },
 ];
 
 export function searchDocs(query: string, locale: string = "en"): DocPage[] {
