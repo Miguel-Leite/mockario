@@ -74,12 +74,23 @@ export function Safari({
       )}
 
       {!hasVideo && imageSrc && isAutoAspect ? (
-        <div className="relative w-full rounded-lg overflow-hidden border border-border">
-          <img
-            src={imageSrc}
-            alt=""
-            className="w-full h-auto block"
-          />
+        <div className="relative w-full" style={{ paddingTop: `${(SCREEN_Y / SAFARI_WIDTH) * 100}%` }}>
+          <div 
+            className="absolute inset-0 overflow-hidden"
+            style={{
+              left: `${LEFT_PCT}%`,
+              top: `${TOP_PCT}%`,
+              width: `${WIDTH_PCT}%`,
+              height: `${HEIGHT_PCT}%`,
+            }}
+          >
+            <img
+              src={imageSrc}
+              alt=""
+              className="w-full h-full object-contain"
+              style={{ objectPosition: 'top' }}
+            />
+          </div>
         </div>
       ) : (
         !hasVideo && imageSrc && (
@@ -103,14 +114,13 @@ export function Safari({
         )
       )}
 
-      {!isAutoAspect && (
-        <svg
-          viewBox={`0 0 ${SAFARI_WIDTH} ${SAFARI_HEIGHT}`}
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="absolute inset-0 z-10 size-full"
-          style={{ transform: "translateZ(0)" }}
-        >
+      <svg
+        viewBox={`0 0 ${SAFARI_WIDTH} ${SAFARI_HEIGHT}`}
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="absolute inset-0 z-10 size-full"
+        style={{ transform: "translateZ(0)" }}
+      >
         <defs>
           <mask id="safariPunch" maskUnits="userSpaceOnUse">
             <rect
@@ -253,7 +263,6 @@ export function Safari({
           ) : null}
         </g>
       </svg>
-      )}
     </div>
   )
 }
