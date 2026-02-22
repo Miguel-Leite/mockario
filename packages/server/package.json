@@ -1,5 +1,5 @@
 {
-  "name": "mockario",
+  "name": "@mockario/mockario",
   "version": "1.2.0",
   "description": "Mock APIs quickly - Server + UI + React Hooks for creating mock endpoints",
   "readme": "README.md",

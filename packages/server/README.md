@@ -7,7 +7,7 @@ A complete tool for creating mock APIs locally, featuring a visual interface and
 ## Installation
 
 ```bash
-npm install mockario
+npm install @mockario/mockario
 ```
 
 ## Quick Start
