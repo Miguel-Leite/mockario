@@ -1,6 +1,6 @@
 {
   "name": "@mockario/mockario",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Mock APIs quickly - Server + UI + React Hooks for creating mock endpoints",
   "readme": "README.md",
   "main": "dist/index.js",
@@ -22,7 +22,7 @@
   "scripts": {
     "dev": "ts-node src/index.ts",
     "build": "tsc",
-    "build:web": "cd ../web && npm run build",
+    "build:web": "cd ../web && npm run build && cp -r dist ../../packages/server/web/",
     "start": "node dist/index.js",
     "test": "jest",
     "test:watch": "jest --watch",
