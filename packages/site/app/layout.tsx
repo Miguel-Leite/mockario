@@ -8,6 +8,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Mockario - Mock APIs fast",
   description: "Develop without waiting for the backend. Create mock APIs locally with ease.",
+  icons: {
+    icon: "/icon.png",
+  },
 };
 
 export default function RootLayout({
