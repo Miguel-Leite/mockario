@@ -63,6 +63,31 @@
     background-image: radial-gradient(circle, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
     background-size: 24px 24px;
   }
+
+  .shiki-container {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 16px;
+    margin: 0;
+    overflow-x: auto;
+    background: transparent !important;
+  }
+
+  .shiki-container code {
+    font-family: inherit;
+    background: transparent !important;
+  }
+
+  .shiki-container pre {
+    margin: 0;
+    padding: 0;
+    background: transparent !important;
+  }
+
+  .shiki-container span {
+    background: transparent !important;
+  }
 }
 
 @theme inline {

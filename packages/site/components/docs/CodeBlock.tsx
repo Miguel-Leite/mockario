@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { Check, Copy, ChevronDown } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Check, Copy } from "lucide-react";
+import { codeToHtml } from "shiki";
 
 interface CodeBlockProps {
   code: string;
@@ -11,7 +12,24 @@ interface CodeBlockProps {
 
 export function CodeBlock({ code, language = "bash", filename }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
+  const [highlightedCode, setHighlightedCode] = useState("");
   const codeRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const highlight = async () => {
+      try {
+        const lang = language === "tsx" ? "tsx" : language === "jsx" ? "jsx" : language;
+        const result = await codeToHtml(code, {
+          lang: lang === "terminal" ? "bash" : lang,
+          theme: "github-dark",
+        });
+        setHighlightedCode(result);
+      } catch (error) {
+        setHighlightedCode(code);
+      }
+    };
+    highlight();
+  }, [code, language]);
 
   const copyCode = async () => {
     await navigator.clipboard.writeText(code);
@@ -23,12 +41,12 @@ export function CodeBlock({ code, language = "bash", filename }: CodeBlockProps)
     bash: "Terminal",
     javascript: "JavaScript",
     typescript: "TypeScript",
+    tsx: "TSX",
+    jsx: "JSX",
     json: "JSON",
     python: "Python",
     html: "HTML",
     css: "CSS",
-    jsx: "JSX",
-    tsx: "TSX",
   };
 
   return (
@@ -61,10 +79,17 @@ export function CodeBlock({ code, language = "bash", filename }: CodeBlockProps)
           </button>
         </div>
       </div>
-      <div className="overflow-x-auto bg-neutral-950 p-4">
-        <pre className="font-mono text-sm leading-relaxed">
-          <code className="text-neutral-100">{code}</code>
-        </pre>
+      <div className="overflow-x-auto bg-neutral-950 p-0">
+        {highlightedCode ? (
+          <div 
+            dangerouslySetInnerHTML={{ __html: highlightedCode }} 
+            className="shiki-container text-sm"
+          />
+        ) : (
+          <pre className="font-mono text-sm leading-relaxed p-4">
+            <code className="text-neutral-100">{code}</code>
+          </pre>
+        )}
       </div>
     </div>
   );
