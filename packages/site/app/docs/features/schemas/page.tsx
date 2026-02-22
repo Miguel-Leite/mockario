@@ -27,7 +27,7 @@ export default function SchemasPage() {
       </ol>
 
       <div className="my-8">
-        <Safari imageSrc="/create-schema.png" url="mockario.com" />
+        <Safari imageSrc="/create-schema.png" url="mockario.com" imageFit="contain" />
       </div>
 
       <h2>{t.docs.schemas.fakerFields}</h2>

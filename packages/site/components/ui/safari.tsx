@@ -20,6 +20,7 @@ export interface SafariProps extends HTMLAttributes<HTMLDivElement> {
   imageSrc?: string
   videoSrc?: string
   mode?: SafariMode
+  imageFit?: "cover" | "contain" | "fill"
 }
 
 export function Safari({
@@ -27,6 +28,7 @@ export function Safari({
   videoSrc,
   url,
   mode = "default",
+  imageFit = "cover",
   className,
   style,
   ...props
@@ -79,7 +81,7 @@ export function Safari({
           <img
             src={imageSrc}
             alt=""
-            className="block size-full object-cover object-top"
+            className={`block size-full object-${imageFit} object-top`}
           />
         </div>
       )}
