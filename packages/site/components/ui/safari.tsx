@@ -81,7 +81,8 @@ export function Safari({
           <img
             src={imageSrc}
             alt=""
-            className={`block size-full object-${imageFit} object-top`}
+            className={`block size-full object-${imageFit}`}
+            style={{ objectPosition: 'top' }}
           />
         </div>
       )}
