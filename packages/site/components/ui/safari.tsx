@@ -37,16 +37,13 @@ export function Safari({
 }: SafariProps) {
   const hasVideo = !!videoSrc
   const hasMedia = hasVideo || !!imageSrc
-  const safariAspectRatio = aspectRatio === "auto" 
-    ? undefined 
-    : (aspectRatio || `${SAFARI_WIDTH}/${SAFARI_HEIGHT}`)
-  const isAutoAspect = aspectRatio === "auto"
+  const safariAspectRatio = aspectRatio || `${SAFARI_WIDTH}/${SAFARI_HEIGHT}`
 
   return (
     <div
       className={`relative inline-block w-full align-middle leading-none ${className ?? ""}`}
       style={{
-        ...(safariAspectRatio && { aspectRatio: safariAspectRatio }),
+        aspectRatio: safariAspectRatio,
         ...style,
       }}
       {...props}
@@ -73,45 +70,24 @@ export function Safari({
         </div>
       )}
 
-      {!hasVideo && imageSrc && isAutoAspect ? (
-        <div className="relative w-full" style={{ paddingTop: `${(SCREEN_Y / SAFARI_WIDTH) * 100}%` }}>
-          <div 
-            className="absolute inset-0 overflow-hidden"
-            style={{
-              left: `${LEFT_PCT}%`,
-              top: `${TOP_PCT}%`,
-              width: `${WIDTH_PCT}%`,
-              height: `${HEIGHT_PCT}%`,
-            }}
-          >
-            <img
-              src={imageSrc}
-              alt=""
-              className="w-full h-full object-contain"
-              style={{ objectPosition: 'top' }}
-            />
-          </div>
+      {!hasVideo && imageSrc && (
+        <div
+          className="pointer-events-none absolute z-0 overflow-hidden"
+          style={{
+            left: `${LEFT_PCT}%`,
+            top: `${TOP_PCT}%`,
+            width: `${WIDTH_PCT}%`,
+            height: `${HEIGHT_PCT}%`,
+            borderRadius: "0 0 11px 11px",
+          }}
+        >
+          <img
+            src={imageSrc}
+            alt=""
+            className={`block size-full object-${imageFit}`}
+            style={{ objectPosition: 'top' }}
+          />
         </div>
-      ) : (
-        !hasVideo && imageSrc && (
-          <div
-            className="pointer-events-none absolute z-0 overflow-hidden"
-            style={{
-              left: `${LEFT_PCT}%`,
-              top: `${TOP_PCT}%`,
-              width: `${WIDTH_PCT}%`,
-              height: `${HEIGHT_PCT}%`,
-              borderRadius: "0 0 11px 11px",
-            }}
-          >
-            <img
-              src={imageSrc}
-              alt=""
-              className={`block size-full object-${imageFit}`}
-              style={{ objectPosition: 'top' }}
-            />
-          </div>
-        )
       )}
 
       <svg

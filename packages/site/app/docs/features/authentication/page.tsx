@@ -76,7 +76,7 @@ export default function AuthenticationPage() {
       </p>
 
       <div className="my-8">
-        <Safari imageSrc="/config-auth-enabled.png" url="mockario.com" imageFit="contain" aspectRatio="auto" />
+        <Safari imageSrc="/config-auth-enabled.png" url="mockario.com" />
       </div>
 
       <Callout type="warning" title={t.docs.authentication.securityWarning}>
