@@ -28,7 +28,7 @@ export class MockServer {
   }
 
   private setupStaticFiles(): void {
-    const webDistPath = path.join(__dirname, '../../web/dist');
+    const webDistPath = path.join(__dirname, '../web/dist');
     this.app.use(express.static(webDistPath));
     this.app.get('/', (_req, res) => {
       res.sendFile(path.join(webDistPath, 'index.html'));
