@@ -88,7 +88,7 @@ export default function Home() {
         </div>
 
         <CodeExample />
-        <div className="max-w-6xl w-full mx-auto px-4 text-center space-y-20">
+        <div id="features" className="max-w-6xl w-full mx-auto px-4 text-center space-y-20">
           <div>
             <h2 className="text-3xl font-bold tracking-tight md:text-4xl dark:text-white text-neutral-900">
               {t.home.everythingYouNeed}
