@@ -18,7 +18,7 @@ export function Header() {
     { label: t.nav.features, href: "/#features" },
     { label: t.nav.playground, href: "/#playground" },
     { label: t.nav.blog, href: "/#blog" },
-    { label: t.nav.roadmap, href: "/#roadmap" },
+    { label: t.nav.roadmap, href: "/docs/roadmap" },
   ];
 
   return (
