@@ -77,6 +77,7 @@ export class EndpointModel {
       schemaRef: dto.schemaRef,
       storedData: dto.storedData,
       responseKeys: dto.responseKeys,
+      count: dto.count,
       authRequired: dto.authRequired,
       requestBody: dto.requestBody,
       createdAt: new Date().toISOString(),
@@ -119,6 +120,7 @@ export class EndpointModel {
       schemaRef: dto.schemaRef !== undefined ? dto.schemaRef : endpoint.schemaRef,
       storedData: dto.storedData !== undefined ? dto.storedData : endpoint.storedData,
       responseKeys: dto.responseKeys !== undefined ? dto.responseKeys : endpoint.responseKeys,
+      count: dto.count !== undefined ? dto.count : endpoint.count,
       authRequired: dto.authRequired !== undefined ? dto.authRequired : endpoint.authRequired,
       requestBody: dto.requestBody !== undefined ? dto.requestBody : endpoint.requestBody,
     };

@@ -8,7 +8,7 @@ const router = Router();
 
 router.post('/endpoints', (req: Request, res: Response) => {
   try {
-    const { path, method, response, delay, responseKeys, schemaRef, storedData } = req.body;
+    const { path, method, response, delay, responseKeys, schemaRef, storedData, count } = req.body;
 
     if (!path || !method || !response) {
       return res.status(400).json({
@@ -23,7 +23,7 @@ router.post('/endpoints', (req: Request, res: Response) => {
       });
     }
 
-    const dto: CreateEndpointDto = { path, method, response, delay, responseKeys, schemaRef, storedData };
+    const dto: CreateEndpointDto = { path, method, response, delay, responseKeys, schemaRef, storedData, count };
     const endpoint = endpointModel.create(dto);
     res.status(201).json(endpoint);
   } catch (error) {
@@ -49,7 +49,7 @@ router.get('/endpoints/:id', (req: Request, res: Response) => {
 
 router.put('/endpoints/:id', (req: Request, res: Response) => {
   const { id } = req.params;
-  const { path, method, response, delay, responseKeys, schemaRef, storedData } = req.body;
+  const { path, method, response, delay, responseKeys, schemaRef, storedData, count } = req.body;
 
   const dto: UpdateEndpointDto = {};
   if (path) dto.path = path;
@@ -59,6 +59,7 @@ router.put('/endpoints/:id', (req: Request, res: Response) => {
   if (responseKeys) dto.responseKeys = responseKeys;
   if (schemaRef) dto.schemaRef = schemaRef;
   if (storedData) dto.storedData = storedData;
+  if (count !== undefined) dto.count = count;
 
   const endpoint = endpointModel.update(id, dto);
 

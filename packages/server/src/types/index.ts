@@ -69,6 +69,7 @@ export interface MockEndpoint {
   schemaRef?: SchemaRef;
   storedData?: object[];
   responseKeys?: string[];
+  count?: number;
   authRequired?: boolean;
   requestBody?: RequestBody;
   createdAt: string;
@@ -83,6 +84,7 @@ export interface CreateEndpointDto {
   schemaRef?: SchemaRef;
   storedData?: object[];
   responseKeys?: string[];
+  count?: number;
   authRequired?: boolean;
   requestBody?: RequestBody;
 }
@@ -96,6 +98,7 @@ export interface UpdateEndpointDto {
   schemaRef?: SchemaRef;
   storedData?: object[];
   responseKeys?: string[];
+  count?: number;
   authRequired?: boolean;
   requestBody?: RequestBody;
 }

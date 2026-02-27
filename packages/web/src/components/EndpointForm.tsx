@@ -60,7 +60,7 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
       setPath(endpoint.path || '');
       setMethod(endpoint.method || 'GET');
       setDelay(endpoint.delay?.toString() || '');
-      setCount(endpoint.storedData ? String(endpoint.storedData.length) : '1');
+      setCount(endpoint.count ? String(endpoint.count) : '1');
       setSchemaId(endpoint.schemaRef?.schemaId || '');
       setTableId(endpoint.schemaRef?.tableId || '');
       setResponseKeys(endpoint.responseKeys || []);
@@ -170,9 +170,9 @@ export function EndpointForm({ onSubmit, endpoint, trigger }: EndpointFormProps)
       response,
       responseType: 'json',
       delay: delay ? parseInt(delay) : undefined,
-      ...(finalSchemaRef ? { schemaRef: finalSchemaRef } : {}),
-      ...(finalResponseKeys ? { responseKeys: finalResponseKeys } : {}),
-      ...(isArray ? { storedData: Array.isArray(response) ? response : [response] } : {}),
+      ...(finalSchemaRef ? { schemaRef: finalSchemaRef, count: parseInt(count) || 1 } : {}),
+      ...(finalResponseKeys ? { responseKeys: finalResponseKeys, count: parseInt(count) || 1 } : {}),
+      ...(isArray && !finalResponseKeys ? { storedData: Array.isArray(response) ? response : [response] } : {}),
       authRequired,
     };
 

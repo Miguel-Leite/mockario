@@ -203,11 +203,16 @@ export class MockServer {
     }
 
     if (endpoint.responseKeys && endpoint.responseKeys.length > 0) {
-      const data = generateFromKeysWithTypes(endpoint.responseKeys, 1);
-      return data[0];
+      const count = endpoint.count ?? 1;
+      const data = generateFromKeysWithTypes(endpoint.responseKeys, count);
+      return count > 1 ? data : data[0];
     }
 
     if (endpoint.storedData && endpoint.storedData.length > 0) {
+      const count = endpoint.count ?? 1;
+      if (count > 1) {
+        return endpoint.storedData.slice(0, count);
+      }
       const randomIndex = Math.floor(Math.random() * endpoint.storedData.length);
       return processObject(endpoint.storedData[randomIndex]);
     }
