@@ -63,6 +63,23 @@ export default function EndpointsPage() {
       <Callout type="tip">
         {t.docs.endpoints.delayMs}
       </Callout>
+
+      <h2>Dynamic Data with Faker Templates</h2>
+      <p>
+        You can use Faker templates in your responses to generate realistic dynamic data. 
+        See the <a href="/docs/faker-templates" className="underline">Faker Templates</a> documentation for all available options.
+      </p>
+
+      <CodeBlock code={`{
+  "path": "/api/users",
+  "method": "GET",
+  "response": {
+    "id": "{{faker.string.uuid}}",
+    "name": "{{faker.person.fullName}}",
+    "email": "{{faker.internet.email}}",
+    "createdAt": "{{faker.date.past}}"
+  }
+}`} language="json" />
     </>
   );
 }

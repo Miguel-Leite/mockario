@@ -1,13 +1,14 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import type { MockEndpoint, Schema, AuthSettings, User } from '../types';
+import type { MockEndpoint, Schema, AuthSettings, User, MockWsEndpoint } from '../types';
 
 interface StorageData {
   endpoints: MockEndpoint[];
   schemas: Schema[];
   auth?: AuthSettings;
   users?: User[];
+  wsEndpoints?: MockWsEndpoint[];
 }
 
 const DEFAULT_DATA_DIR = path.join(os.homedir(), '.mockario');
@@ -148,6 +149,38 @@ export class Storage {
 
   deleteUser(userId: string): void {
     this.data.users = (this.data.users || []).filter(u => u.id !== userId);
+    this.save();
+  }
+
+  getWsEndpoints(): MockWsEndpoint[] {
+    return this.data.wsEndpoints || [];
+  }
+
+  addWsEndpoint(endpoint: MockWsEndpoint): void {
+    if (!this.data.wsEndpoints) {
+      this.data.wsEndpoints = [];
+    }
+    this.data.wsEndpoints.push(endpoint);
+    this.save();
+  }
+
+  updateWsEndpoint(id: string, endpoint: MockWsEndpoint): void {
+    if (!this.data.wsEndpoints) return;
+    const index = this.data.wsEndpoints.findIndex(ep => ep.id === id);
+    if (index !== -1) {
+      this.data.wsEndpoints[index] = endpoint;
+      this.save();
+    }
+  }
+
+  deleteWsEndpoint(id: string): void {
+    if (!this.data.wsEndpoints) return;
+    this.data.wsEndpoints = this.data.wsEndpoints.filter(ep => ep.id !== id);
+    this.save();
+  }
+
+  clearWsEndpoints(): void {
+    this.data.wsEndpoints = [];
     this.save();
   }
 

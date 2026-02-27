@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { FileText, Database, Settings, Send } from 'lucide-react';
+import { FileText, Database, Settings, Send, Wifi, Play } from 'lucide-react';
 
 interface HeaderProps {
   serverConnected?: boolean;
@@ -49,6 +49,26 @@ export function Header({ serverConnected = true }: HeaderProps) {
             >
               <Send className="h-4 w-4" />
               HTTP
+            </Link>
+            <Link
+              to="/web-sockets"
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors ${isActive('/web-sockets')
+                ? 'bg-neutral-800 text-neutral-100'
+                : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/50'
+                }`}
+            >
+              <Wifi className="h-4 w-4" />
+              WS
+            </Link>
+            <Link
+              to="/ws-tester"
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors ${isActive('/ws-tester')
+                ? 'bg-neutral-800 text-neutral-100'
+                : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/50'
+                }`}
+            >
+              <Play className="h-4 w-4" />
+              Tester
             </Link>
             <Link
               to="/settings"

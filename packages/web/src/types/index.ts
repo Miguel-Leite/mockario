@@ -113,3 +113,35 @@ export interface RequestLog {
   timestamp: string;
   responseTime?: number;
 }
+
+export type WsEventType = 'message' | 'connection' | 'disconnect' | 'error';
+
+export interface MockWsEndpoint {
+  id: string;
+  path: string;
+  eventType: WsEventType;
+  response?: object;
+  responseType?: ResponseType;
+  delay?: number;
+  authRequired?: boolean;
+  createdAt: string;
+}
+
+export interface CreateWsEndpointDto {
+  path: string;
+  eventType?: WsEventType;
+  response?: object;
+  responseType?: ResponseType;
+  delay?: number;
+  authRequired?: boolean;
+}
+
+export interface WsConnection {
+  id: string;
+  endpointId: string;
+  connectedAt: string;
+  clientInfo?: {
+    remoteAddress?: string;
+    userAgent?: string;
+  };
+}

@@ -1,6 +1,6 @@
 'use client'
 import Link from "next/link";
-import { Database, Shield, Send, Zap, Wand2, Code2, ArrowRight, Github } from "lucide-react";
+import { Database, Shield, Send, Zap, Wand2, Code2, ArrowRight, Github, Wifi } from "lucide-react";
 import { MagicCard } from "@/components/ui";
 import colors from "tailwindcss/colors";
 import { useTheme } from "next-themes";
@@ -28,6 +28,11 @@ export default function Home() {
       icon: Send,
       title: t.home.features.httpClient.title,
       description: t.home.features.httpClient.description,
+    },
+    {
+      icon: Wifi,
+      title: t.home.features.webSockets.title,
+      description: t.home.features.webSockets.description,
     },
     {
       icon: Zap,

@@ -18,6 +18,8 @@ import {
   FileText,
   Code2,
   Map,
+  Wifi,
+  Wand2,
 } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
 
@@ -38,6 +40,14 @@ const navSections = [
       { titleKey: "endpoints" as const, href: "/docs/features/endpoints" },
       { titleKey: "schemas" as const, href: "/docs/features/schemas" },
       { titleKey: "authentication" as const, href: "/docs/features/authentication" },
+      { titleKey: "webSockets" as const, href: "/docs/features/web-sockets" },
+    ],
+  },
+  {
+    titleKey: "fakerTemplates" as const,
+    icon: Wand2,
+    items: [
+      { titleKey: "overview" as const, href: "/docs/faker-templates" },
     ],
   },
   {

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { MockEndpoint, CreateEndpointDto, RequestLog, Schema, SchemaTable, SchemaField, SchemaRelation, TablePosition, AuthSettings, User } from '@/types';
+import type { MockEndpoint, CreateEndpointDto, RequestLog, Schema, SchemaTable, SchemaField, SchemaRelation, TablePosition, AuthSettings, User, MockWsEndpoint, CreateWsEndpointDto, WsConnection } from '@/types';
 
 const API_BASE_URL = 'http://localhost:3001/api';
 
@@ -211,4 +211,40 @@ export const httpClientRequest = async (config: {
     data,
     duration,
   };
+};
+
+export const wsEndpointsApi = {
+  getAll: async (): Promise<MockWsEndpoint[]> => {
+    const response = await api.get<MockWsEndpoint[]>('/ws-endpoints');
+    return response.data;
+  },
+
+  getById: async (id: string): Promise<MockWsEndpoint> => {
+    const response = await api.get<MockWsEndpoint>(`/ws-endpoints/${id}`);
+    return response.data;
+  },
+
+  create: async (dto: CreateWsEndpointDto): Promise<MockWsEndpoint> => {
+    const response = await api.post<MockWsEndpoint>('/ws-endpoints', dto);
+    return response.data;
+  },
+
+  update: async (id: string, dto: Partial<CreateWsEndpointDto>): Promise<MockWsEndpoint> => {
+    const response = await api.put<MockWsEndpoint>(`/ws-endpoints/${id}`, dto);
+    return response.data;
+  },
+
+  delete: async (id: string): Promise<void> => {
+    await api.delete(`/ws-endpoints/${id}`);
+  },
+
+  getConnections: async (): Promise<WsConnection[]> => {
+    const response = await api.get<WsConnection[]>('/ws-connections');
+    return response.data;
+  },
+
+  broadcast: async (endpointId: string, message: object): Promise<{ count: number }> => {
+    const response = await api.post<{ count: number }>(`/ws-endpoints/${endpointId}/broadcast`, message);
+    return response.data;
+  },
 };

@@ -1,18 +1,30 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import path from 'path';
+import { WebSocketServer, WebSocket } from 'ws';
 import { endpointModel } from './models/Endpoint';
+import { wsEndpointModel } from './models/WsEndpoint';
 import { processObject, processFakerTemplate } from './utils/faker';
 import { logger } from './utils/logger';
 import mockRoutes from './routes/mockRoutes';
 import authRoutes from './routes/auth';
+import wsRoutes from './routes/wsRoutes';
 import { authMiddleware } from './middleware/auth';
-import { MockServerConfig, HttpMethod, RequestLog, ResponseType } from './types';
+import { MockServerConfig, HttpMethod, RequestLog, ResponseType, MockWsEndpoint, WsConnection } from './types';
+
+interface ConnectedClient {
+  id: string;
+  ws: WebSocket;
+  endpointId: string;
+  connectedAt: string;
+}
 
 export class MockServer {
   private app: Application;
   private server: any;
   private port: number;
+  private wss: WebSocketServer | null = null;
+  private connectedClients: Map<string, ConnectedClient> = new Map();
 
   constructor(config: MockServerConfig = {}) {
     this.app = express();
@@ -66,6 +78,7 @@ export class MockServer {
   private setupMockRoutes(): void {
     this.app.use('/api/auth', authRoutes);
     this.app.use('/api', mockRoutes);
+    this.app.use('/api', wsRoutes);
   }
 
   private setupMockHandler(): void {
@@ -203,9 +216,97 @@ export class MockServer {
     return new Promise((resolve) => {
       this.server = this.app.listen(this.port, () => {
         console.log(`Mock server running on http://localhost:${this.port}`);
+        this.setupWebSocket();
         resolve();
       });
     });
+  }
+
+  private setupWebSocket(): void {
+    this.wss = new WebSocketServer({ server: this.server });
+
+    this.wss.on('connection', (ws, req) => {
+      const clientId = `ws-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+      const url = req.url || '';
+      const endpointPath = url.replace(/^\/ws\/?/, '/ws/');
+
+      const endpoint = wsEndpointModel.findByPath(endpointPath);
+
+      if (!endpoint) {
+        ws.close(1008, 'Endpoint not found');
+        return;
+      }
+
+      const client: ConnectedClient = {
+        id: clientId,
+        ws,
+        endpointId: endpoint.id,
+        connectedAt: new Date().toISOString(),
+      };
+
+      this.connectedClients.set(clientId, client);
+      console.log(`[WebSocket] Client connected: ${clientId} to ${endpointPath}`);
+
+      if (endpoint.delay && endpoint.delay > 0) {
+        setTimeout(() => {
+          this.sendAutoResponse(ws, endpoint);
+        }, endpoint.delay);
+      } else {
+        this.sendAutoResponse(ws, endpoint);
+      }
+
+      ws.on('message', (data) => {
+        console.log(`[WebSocket] Message from ${clientId}:`, data.toString());
+        this.sendAutoResponse(ws, endpoint);
+      });
+
+      ws.on('close', () => {
+        this.connectedClients.delete(clientId);
+        console.log(`[WebSocket] Client disconnected: ${clientId}`);
+      });
+
+      ws.on('error', (error) => {
+        console.error(`[WebSocket] Error for ${clientId}:`, error);
+      });
+    });
+
+    console.log(`WebSocket server running on ws://localhost:${this.port}/ws`);
+  }
+
+  private sendAutoResponse(ws: WebSocket, endpoint: MockWsEndpoint): void {
+    if (endpoint.response) {
+      let responseData: any;
+      if (endpoint.responseType === 'ts' && typeof endpoint.response === 'string') {
+        try {
+          const processed = processFakerTemplate(endpoint.response);
+          responseData = JSON.parse(processed);
+        } catch {
+          responseData = endpoint.response;
+        }
+      } else {
+        responseData = processObject(endpoint.response);
+      }
+      ws.send(JSON.stringify(responseData));
+    }
+  }
+
+  public getWsConnections(): WsConnection[] {
+    return Array.from(this.connectedClients.values()).map(client => ({
+      id: client.id,
+      endpointId: client.endpointId,
+      connectedAt: client.connectedAt,
+    }));
+  }
+
+  public broadcastToEndpoint(endpointId: string, message: object): number {
+    let count = 0;
+    this.connectedClients.forEach(client => {
+      if (client.endpointId === endpointId && client.ws.readyState === WebSocket.OPEN) {
+        client.ws.send(JSON.stringify(message));
+        count++;
+      }
+    });
+    return count;
   }
 
   public stop(): Promise<void> {

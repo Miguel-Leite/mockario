@@ -4,6 +4,8 @@ import { Schemas } from './pages/Schemas';
 import { SchemaEditor } from './pages/SchemaEditor';
 import { Settings } from './pages/Settings';
 import { HttpClientPage } from './pages/HttpClientPage';
+import { WebSockets } from './pages/WebSockets';
+import { WsTester } from './pages/WsTester';
 
 function App() {
   return (
@@ -14,6 +16,8 @@ function App() {
         <Route path="/schemas/:id" element={<SchemaEditor />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/http-client" element={<HttpClientPage />} />
+        <Route path="/web-sockets" element={<WebSockets />} />
+        <Route path="/ws-tester" element={<WsTester />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

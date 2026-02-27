@@ -64,6 +64,15 @@ export const docsPages: DocPage[] = [
     contentPt: `Adicione autenticação aos seus endpoints mock. Tipos de Autenticação: O Mockario suporta diversos tipos de autenticação. JWT JSON Web Token: type jwt secret. API Key: type apiKey header X-API-Key. Basic Auth: type basic username password. Bearer Token: type bearer token. Rotas de Auth Automáticas: O Mockario cria automaticamente rotas de autenticação: POST /api/auth/register Criar usuário, POST /api/auth/login Fazer login, GET /api/auth/me Obter usuário atual. Gerenciar Usuários: Você pode criar e gerenciar usuários através da interface web ou da API. Aviso de Segurança: Estes são endpoints mock. Não use em produção! As senhas e tokens são armazenados de forma simplificada.`,
   },
   {
+    titleEn: "WebSockets",
+    titlePt: "WebSockets",
+    slug: "/docs/features/web-sockets",
+    sectionEn: "Features",
+    sectionPt: "Funcionalidades",
+    contentEn: `Create mock WebSocket endpoints for real-time communication. WebSocket Support allows you to create servers that simulate bidirectional real-time communication. Perfect for chat applications, live notifications, and real-time features. Create endpoints: POST /api/ws-endpoints with path eventType response delay. Event types: message connection disconnect error. Client connection: new WebSocket ws://localhost:3001/ws/chat. Auto-response sends configured JSON when client connects or sends message. Authentication supported. Faker templates: person.fullName person.firstName person.email person.jobTitle date.past date.future date.recent location.city location.country location.street internet.url internet.username internet.uuid string.uuid string.alpha string.numeric datatype.boolean commerce.productName commerce.price finance.currencyCode lorem.word lorem.sentence lorem.paragraph vehicle.vehicle vehicle.color music.songName music.artist.`,
+    contentPt: `Crie endpoints WebSocket mock para comunicação em tempo real. O Suporte WebSocket permite criar servidores que simulam comunicação bidirecional em tempo real. Perfeito para aplicações de chat, notificações em tempo real e funcionalidades em tempo real. Criar endpoints: POST /api/ws-endpoints com path eventType response delay. Tipos de evento: message connection disconnect error. Conexão cliente: new WebSocket ws://localhost:3001/ws/chat. Resposta automática envia JSON configurado quando cliente conecta ou envia mensagem. Autenticação suportada. Templates Faker: person.fullName person.firstName person.email person.jobTitle date.past date.future date.recent location.city location.country location.street internet.url internet.username internet.uuid string.uuid string.alpha string.numeric datatype.boolean commerce.productName commerce.price finance.currencyCode lorem.word lorem.sentence lorem.paragraph vehicle.vehicle vehicle.color music.songName music.artist.`,
+  },
+  {
     titleEn: "HTTP Client",
     titlePt: "Cliente HTTP",
     slug: "/docs/http-client",
@@ -89,6 +98,24 @@ export const docsPages: DocPage[] = [
     sectionPt: "Hooks",
     contentEn: `Mockario provides React hooks for easy integration with your front-end. useMockEndpoints returns all endpoints and provides create, update, delete functions. useMockServer checks connection status to the mock server. useMockLogs returns request logs. MockarioProvider wraps your app and sets up React Query Client. Example: import { useMockEndpoints } from '@mockario/mockario', const { endpoints, isLoading, create, update, remove } = useMockEndpoints('http://localhost:3001').`,
     contentPt: `O Mockario oferece hooks React para facilitar a integração com sua aplicação front-end. useMockEndpoints retorna todos os endpoints e fornece funções para criar, atualizar e deletar. useMockServer verifica o status da conexão com o servidor mock. useMockLogs retorna os logs de requisições. MockarioProvider envolve sua aplicação e configura o React Query Client. Exemplo: import { useMockEndpoints } from '@mockario/mockario', const { endpoints, isLoading, create, update, remove } = useMockEndpoints('http://localhost:3001').`,
+  },
+  {
+    titleEn: "Roadmap",
+    titlePt: "Roadmap",
+    slug: "/docs/roadmap",
+    sectionEn: "Roadmap",
+    sectionPt: "Roadmap",
+    contentEn: `See what's coming next for Mockario and contribute to the project. Coming Next: OpenAPI Swagger Import, Docker Image, Recording Mode. In Development: WebSocket Support, GraphQL Support, Response Scripting. Under Considerations: Analytics Dashboard, Environment Variables, VS Code Extension, Team Collaboration, Plugin System, gRPC Support. Contribute to Mockario: Help shape the future by sharing ideas and feedback.`,
+    contentPt: `Veja o que vem a seguir para o Mockario e contribua para o projeto. Próximos: Importação OpenAPI Swagger, Imagem Docker, Modo de Gravação. Em Desenvolvimento: Suporte WebSocket, Suporte GraphQL, Scripting de Resposta. Em Consideração: Painel de Analytics, Variáveis de Ambiente, Extensão VS Code, Colaboração em Equipa, Sistema de Plugins, Suporte gRPC. Contribua: Ajude a moldar o futuro compartilhando ideias e feedback.`,
+  },
+  {
+    titleEn: "Faker Templates",
+    titlePt: "Templates Faker",
+    slug: "/docs/faker-templates",
+    sectionEn: "Faker Templates",
+    sectionPt: "Templates Faker",
+    contentEn: `Generate realistic fake data with Faker templates. Works in HTTP endpoints and WebSocket responses. Syntax: {{faker.method}} or {{faker.module.method}}. Person: fullName firstName lastName email jobTitle gender bio. Date: past future recent soon month weekday. Location: city country street state zipCode latitude longitude. Internet: url email username password ip ipv4 ipv6 mac userAgent. Commerce: productName price department. Finance: currencyCode amount bitcoinAddress iban. Data Types: uuid string alpha alphanumeric numeric boolean number. Lorem: word words sentence sentences paragraph slug. Vehicle: vehicle manufacturer model color fuel vin. Music: songName artist album genre. Image: avatar url. Quick Reference: uuid email name firstName lastName city country phone price word sentence paragraph.`,
+    contentPt: `Gere dados fake realistas com templates Faker. Funciona em endpoints HTTP e respostas WebSocket. Sintaxe: {{faker.method}} ou {{faker.module.method}}. Person: fullName firstName lastName email jobTitle gender bio. Date: past future recent soon month weekday. Location: city country street state zipCode latitude longitude. Internet: url email username password ip ipv4 ipv6 mac userAgent. Commerce: productName price department. Finance: currencyCode amount bitcoinAddress iban. Data Types: uuid string alpha alphanumeric numeric boolean number. Lorem: word words sentence sentences paragraph slug. Vehicle: vehicle manufacturer model color fuel vin. Music: songName artist album genre. Image: avatar url. Referência Rápida: uuid email name firstName lastName city country phone price word sentence paragraph.`,
   },
 ];
 
